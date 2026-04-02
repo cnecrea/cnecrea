@@ -1,0 +1,239 @@
+name: Rezumat zilnic probleme deschise
+
+on:
+  schedule:
+    # Rulează zilnic la 08:00 UTC (11:00 România)
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+jobs:
+  rezumat-probleme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Preia codul
+        uses: actions/checkout@v4
+
+      - name: Configurează Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalează dependențe
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests
+
+      - name: Generează rezumat HTML
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 << 'PYTHONEOF'
+          import os
+          import requests
+          from datetime import datetime
+
+          token = os.getenv('GITHUB_TOKEN')
+          owner = 'cnecrea'
+
+          repos = {
+              "cursbnr":        ("Curs BNR",         "https://github.com/cnecrea/cursbnr"),
+              "e-bloc.ro":      ("E-bloc România",   "https://github.com/cnecrea/e-bloc.ro"),
+              "eonromania":     ("E.ON România",     "https://github.com/cnecrea/eonromania"),
+              "erovinieta":     ("CNAIR eRovinieta",       "https://github.com/cnecrea/erovinieta"),
+              "hidroelectrica": ("Hidroelectrica",   "https://github.com/cnecrea/hidroelectrica"),
+              "fleet":          ("Manager de flota", "https://github.com/cnecrea/fleet"),
+              "myelectrica":    ("MyElectrica",      "https://github.com/cnecrea/myelectrica"),
+              "myengie":        ("MyENGIE",          "https://github.com/cnecrea/myengie"),
+              "vreaulanova":    ("Nova Power & Gas", "https://github.com/cnecrea/vreaulanova"),
+              "opcom":          ("OPCOM",            "https://github.com/cnecrea/opcom"),
+              "pagoplateste":   ("Pago Plătește",    "https://github.com/cnecrea/pagoplateste"),
+              "smsto":          ("SMS.to",           "https://github.com/cnecrea/smsto"),
+              "vehicule":       ("Vehicule",         "https://github.com/cnecrea/vehicule"),
+          }
+
+          headers = {
+              "Authorization": "token " + token,
+              "Accept": "application/vnd.github.v3+json",
+          }
+
+          luni = {
+              "January":"ianuarie","February":"februarie","March":"martie",
+              "April":"aprilie","May":"mai","June":"iunie","July":"iulie",
+              "August":"august","September":"septembrie","October":"octombrie",
+              "November":"noiembrie","December":"decembrie",
+          }
+
+          from zoneinfo import ZoneInfo
+          now_ro = datetime.now(ZoneInfo("Europe/Bucharest"))
+
+          azi = now_ro.strftime('%d %B %Y')
+          ora = now_ro.strftime('%H:%M')
+
+          for eng, ro in luni.items():
+              azi = azi.replace(eng, ro)
+
+          total_issues = 0
+          repo_counts  = []
+          detalii      = []
+
+          for repo_key, (nume, link) in repos.items():
+              api_url = ("https://api.github.com/repos/" + owner + "/"
+                         + repo_key + "/issues?state=open&per_page=100")
+              try:
+                  resp = requests.get(api_url, headers=headers, timeout=10)
+                  resp.raise_for_status()
+                  issues = resp.json()
+              except requests.exceptions.RequestException as e:
+                  print("Eroare la " + repo_key + ": " + str(e))
+                  issues = []
+              count = len(issues)
+              total_issues += count
+              repo_counts.append((nume, link, count))
+              for issue in issues:
+                  title     = issue['title'].replace('<','&lt;').replace('>','&gt;')
+                  user      = issue['user']['login']
+                  number    = issue['number']
+                  labels    = [lb['name'] for lb in issue.get('labels', [])]
+                  label_str = ", ".join(labels) if labels else "fara label"
+                  detalii.append((nume, link, user, label_str, number, title))
+
+          F = 'font-family:Arial,sans-serif;'
+
+          # ── Tabel rezumat per repo ──────────────────────────────────────────
+          repo_rows = ""
+          for (nume, link, count) in repo_counts:
+              repo_rows += (
+                  '<tr>'
+                  '<td style="' + F + 'font-size:14px;color:#24292f;padding:10px 0;'
+                  'border-bottom:1px solid #eaeaea;">'
+                  '<a href="' + link + '" style="color:#24292f;text-decoration:none;">'
+                  + nume + '</a></td>'
+                  '<td style="' + F + 'font-size:14px;color:#24292f;padding:10px 0;'
+                  'border-bottom:1px solid #eaeaea;text-align:right;font-weight:600;">'
+                  + str(count) + '</td>'
+                  '</tr>'
+              )
+
+          # ── Carduri issue ───────────────────────────────────────────────────
+          issue_cards = ""
+          for (nume, link, user, label, number, title) in detalii:
+              issue_cards += (
+
+                  '<p style="margin:0 0 3px;' + F + 'font-size:15px;font-weight:600;'
+                  'color:#24292f;">' + title + '</p>'
+
+                  '<p style="margin:0 0 16px;' + F + 'font-size:13px;color:#8c959f;">' +
+                  nume + ' &bull; ' + label + ' &bull; deschis de @' + user +
+                  '</p>'
+
+                  '<table role="presentation" width="100%" cellpadding="0"'
+                  ' cellspacing="0" border="0" style="margin-bottom:16px;">'
+                  '<tr><td style="border-top:1px solid #eaeaea;"></td></tr>'
+                  '</table>'
+              )
+
+          if detalii:
+              detail_block = (
+                  '<p style="margin:32px 0 12px;' + F + 'font-size:13px;font-weight:600;'
+                  'color:#8c959f;text-transform:uppercase;letter-spacing:1px;">'
+                  'Detalii probleme</p><br>'
+                  + issue_cards
+              )
+          else:
+              detail_block = (
+                  '<p style="margin:32px 0 0;' + F + 'font-size:15px;color:#24292f;">'
+                  'Nicio problemă deschisă. Toate repositoriile sunt în ordine.</p>'
+              )
+
+          html = (
+              '<!DOCTYPE html>'
+              '<html lang="ro">'
+              '<head>'
+              '<meta charset="utf-8">'
+              '<meta name="viewport" content="width=device-width,initial-scale=1.0">'
+              '<title>Rezumat zilnic</title>'
+              '<!--[if mso]><style>body,table,td,p,a{font-family:Arial,sans-serif !important;}</style><![endif]-->'
+              '<style>'
+              'body{margin:0;padding:0;background:#f6f8fa;}'
+              '@media only screen and (max-width:600px){'
+              '.wrap{padding:16px !important;}'
+              '.body{padding:24px !important;}'
+              '}'
+              '</style>'
+              '</head>'
+              '<body style="margin:0;padding:0;background:#f6f8fa;">'
+
+              '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">'
+              '<tr><td align="center" style="padding:32px 16px;" class="wrap">'
+              '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"'
+              ' border="0" style="max-width:520px;width:100%;">'
+
+              # header
+              '<tr><td style="background:#ffffff;border-radius:6px 6px 0 0;'
+              'border:1px solid #eaeaea;border-bottom:none;padding:32px 32px 0;" class="body">'
+              '<p style="margin:0 0 4px;' + F + 'font-size:13px;color:#8c959f;">GitHub Actions</p>'
+              '<h1 style="margin:0 0 4px;' + F + 'font-size:22px;font-weight:700;color:#24292f;">'
+              'Rezumat zilnic</h1>'
+              '<p style="margin:0;' + F + 'font-size:14px;color:#8c959f;">'
+              + azi + ' la ' + ora + ' &bull; '
+              + str(len(repos)) + ' integr&#259;ri &bull; '
+              + str(total_issues) + ' probleme deschise'
+              '</p>'
+              '</td></tr>'
+
+              # divider
+              '<tr><td style="background:#ffffff;border-left:1px solid #eaeaea;'
+              'border-right:1px solid #eaeaea;padding:0 32px;">'
+              '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">'
+              '<tr><td style="border-top:1px solid #eaeaea;padding-top:24px;"></td></tr>'
+              '</table>'
+              '</td></tr>'
+
+              # body
+              '<tr><td style="background:#ffffff;border-radius:0 0 6px 6px;'
+              'border:1px solid #eaeaea;border-top:none;padding:0 32px 32px;" class="body">'
+
+              '<p style="margin:0 0 12px;' + F + 'font-size:13px;font-weight:600;'
+              'color:#8c959f;text-transform:uppercase;letter-spacing:1px;">'
+              'Probleme pe integrare</p>'
+
+              '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">'
+              '<tbody>' + repo_rows + '</tbody>'
+              '</table>'
+
+              + detail_block +
+
+              '</td></tr>'
+
+              # footer
+              '<tr><td style="padding:20px 0;text-align:center;">'
+              '<p style="margin:0;' + F + 'font-size:12px;color:#8c959f;">'
+              'Raport automat &bull; cnecrea / GitHub Actions</p>'
+              '</td></tr>'
+
+              '</table>'
+              '</td></tr></table>'
+              '</body></html>'
+          )
+
+          with open('rezumat.html', 'w', encoding='utf-8') as f:
+              f.write(html)
+
+          print("Rezumat generat cu succes: rezumat.html")
+          PYTHONEOF
+
+      - name: Afiseaza rezumatul generat (debug)
+        run: cat rezumat.html
+
+      - name: Trimite email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          subject: "Rezumat zilnic probleme deschise"
+          to: ${{ secrets.EMAIL_TO }}
+          from: "GitHub Workflows <${{ secrets.EMAIL_USER }}>"
+          html_body: file://rezumat.html

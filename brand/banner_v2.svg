@@ -1,0 +1,246 @@
+<svg width="1500" height="500" viewBox="0 0 1500 500" xmlns="http://www.w3.org/2000/svg">
+<rect width="1500" height="500" fill="#0D1B2A"/>
+<defs>
+<linearGradient id="glow1" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#18B4E8" stop-opacity="0.15"/>
+<stop offset="100%" stop-color="#18B4E8" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="glow2" x1="1" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#4DD0E1" stop-opacity="0.1"/>
+<stop offset="100%" stop-color="#4DD0E1" stop-opacity="0"/>
+</linearGradient>
+</defs>
+<circle cx="250" cy="250" r="320" fill="url(#glow1)"/>
+<circle cx="1250" cy="250" r="350" fill="url(#glow2)"/>
+<!-- Grid background -->
+<g opacity="0.05" stroke="#4DD0E1" stroke-width="0.5" fill="none">
+<line x1="0" y1="50" x2="1500" y2="50"/><line x1="0" y1="100" x2="1500" y2="100"/>
+<line x1="0" y1="150" x2="1500" y2="150"/><line x1="0" y1="200" x2="1500" y2="200"/>
+<line x1="0" y1="250" x2="1500" y2="250"/><line x1="0" y1="300" x2="1500" y2="300"/>
+<line x1="0" y1="350" x2="1500" y2="350"/><line x1="0" y1="400" x2="1500" y2="400"/>
+<line x1="0" y1="450" x2="1500" y2="450"/>
+<line x1="100" y1="0" x2="100" y2="500"/><line x1="200" y1="0" x2="200" y2="500"/>
+<line x1="300" y1="0" x2="300" y2="500"/><line x1="400" y1="0" x2="400" y2="500"/>
+<line x1="500" y1="0" x2="500" y2="500"/><line x1="600" y1="0" x2="600" y2="500"/>
+<line x1="700" y1="0" x2="700" y2="500"/><line x1="800" y1="0" x2="800" y2="500"/>
+<line x1="900" y1="0" x2="900" y2="500"/><line x1="1000" y1="0" x2="1000" y2="500"/>
+<line x1="1100" y1="0" x2="1100" y2="500"/><line x1="1200" y1="0" x2="1200" y2="500"/>
+<line x1="1300" y1="0" x2="1300" y2="500"/><line x1="1400" y1="0" x2="1400" y2="500"/>
+</g>
+<!-- Scatter dots -->
+<g opacity="0.08">
+<circle cx="150" cy="80" r="3" fill="#4DD0E1"/><circle cx="350" cy="420" r="2" fill="#18B4E8"/>
+<circle cx="550" cy="60" r="2.5" fill="#4DD0E1"/><circle cx="950" cy="70" r="3" fill="#4DD0E1"/>
+<circle cx="1150" cy="430" r="2.5" fill="#18B4E8"/><circle cx="1350" cy="90" r="2" fill="#4DD0E1"/>
+<circle cx="250" cy="440" r="2" fill="#4DD0E1"/><circle cx="450" cy="50" r="2" fill="#18B4E8"/>
+<circle cx="650" cy="450" r="3" fill="#4DD0E1"/><circle cx="850" cy="40" r="2" fill="#18B4E8"/>
+<circle cx="1050" cy="460" r="2.5" fill="#4DD0E1"/><circle cx="1450" cy="440" r="2.5" fill="#4DD0E1"/>
+</g>
+
+<!-- LEFT: Custom Integration Cards (Energy/Utilities) -->
+<!-- Hidroelectrica -->
+<g transform="translate(60,55)">
+<rect x="0" y="0" width="100" height="80" rx="14" fill="#1B2838" stroke="#18B4E8" stroke-width="1.2"/>
+<path d="M35 25Q50 15 65 25Q50 35 35 25" stroke="#4DD0E1" stroke-width="1.8" fill="#18B4E8" fill-opacity="0.15"/>
+<path d="M42 38L50 50L58 38" stroke="#18B4E8" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+<path d="M46 44L50 55L54 44" stroke="#4DD0E1" stroke-width="1" stroke-linecap="round" fill="none"/>
+<text x="50" y="72" fill="#4DD0E1" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.8">HIDRO</text>
+</g>
+
+<!-- MyElectrica -->
+<g transform="translate(60,175)">
+<rect x="0" y="0" width="100" height="80" rx="14" fill="#1B2838" stroke="#FBBF24" stroke-width="1.2"/>
+<path d="M43 20L50 40L57 20" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" fill="none"/>
+<path d="M46 30L50 45L54 30" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+<circle cx="50" cy="52" r="4" fill="#FBBF24" opacity="0.25"/>
+<circle cx="50" cy="52" r="2" fill="#FBBF24"/>
+<text x="50" y="72" fill="#FBBF24" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.8">ELECTRICA</text>
+</g>
+
+<!-- E.ON Romania -->
+<g transform="translate(60,295)">
+<rect x="0" y="0" width="100" height="80" rx="14" fill="#1B2838" stroke="#EF4444" stroke-width="1.2"/>
+<circle cx="50" cy="32" r="12" fill="none" stroke="#EF4444" stroke-width="1.5"/>
+<path d="M44 32L50 26L56 32L50 38Z" fill="#EF4444" opacity="0.4"/>
+<circle cx="50" cy="32" r="4" fill="#EF4444" opacity="0.7"/>
+<text x="50" y="60" fill="#EF4444" font-family="monospace" font-size="8" text-anchor="middle" opacity="0.9">E.ON</text>
+<text x="50" y="72" fill="#EF4444" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.6">ROMANIA</text>
+</g>
+
+<!-- OPCOM PZU -->
+<g transform="translate(200,55)">
+<rect x="0" y="0" width="100" height="80" rx="14" fill="#1B2838" stroke="#10B981" stroke-width="1.2"/>
+<path d="M30 50L42 25L54 45L66 20L70 50" stroke="#34D399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<rect x="28" y="54" width="44" height="12" rx="3" fill="#10B981" opacity="0.15"/>
+<text x="50" y="63" fill="#10B981" font-family="monospace" font-size="7" text-anchor="middle" font-weight="bold">0.42 RON</text>
+<text x="50" y="78" fill="#10B981" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.6">OPCOM PZU</text>
+</g>
+
+<!-- Vehicule -->
+<g transform="translate(200,175)">
+<rect x="0" y="0" width="100" height="80" rx="14" fill="#1B2838" stroke="#8B5CF6" stroke-width="1.2"/>
+<rect x="32" y="22" width="36" height="18" rx="6" fill="none" stroke="#8B5CF6" stroke-width="1.3"/>
+<circle cx="38" cy="46" r="5" fill="none" stroke="#A78BFA" stroke-width="1.2"/>
+<circle cx="62" cy="46" r="5" fill="none" stroke="#A78BFA" stroke-width="1.2"/>
+<line x1="32" y1="40" x2="68" y2="40" stroke="#8B5CF6" stroke-width="1" opacity="0.5"/>
+<text x="50" y="72" fill="#8B5CF6" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.8">VEHICULE</text>
+</g>
+
+<!-- eRovinieta -->
+<g transform="translate(200,295)">
+<rect x="0" y="0" width="100" height="80" rx="14" fill="#1B2838" stroke="#EC4899" stroke-width="1.2"/>
+<rect x="32" y="18" width="36" height="26" rx="4" fill="none" stroke="#EC4899" stroke-width="1.2"/>
+<path d="M38 28L46 36L62 24" stroke="#F472B6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<text x="50" y="58" fill="#EC4899" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.9">VALID</text>
+<text x="50" y="72" fill="#EC4899" font-family="monospace" font-size="7" text-anchor="middle" opacity="0.6">ROVINIETA</text>
+</g>
+
+<!-- Connection lines from left cards to center hub -->
+<g opacity="0.25">
+<path d="M160 95Q220 95 300 160L390 200" stroke="#18B4E8" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+<path d="M160 215Q260 215 330 230L390 240" stroke="#FBBF24" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+<path d="M160 335Q220 335 300 310L390 280" stroke="#EF4444" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+<path d="M300 95Q340 95 370 160L390 210" stroke="#10B981" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+<path d="M300 215Q340 225 370 240L390 250" stroke="#8B5CF6" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+<path d="M300 335Q340 335 370 300L390 280" stroke="#EC4899" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+</g>
+
+<!-- CENTER: Home Assistant Hub -->
+<g transform="translate(400,95)">
+<rect x="0" y="0" width="220" height="310" rx="26" fill="#1B2838" stroke="#18B4E8" stroke-width="2"/>
+<rect x="0" y="0" width="220" height="310" rx="26" fill="none" stroke="#4DD0E1" stroke-width="0.5" opacity="0.25"/>
+<!-- HA logo rings -->
+<circle cx="110" cy="95" r="48" fill="none" stroke="#18B4E8" stroke-width="2"/>
+<circle cx="110" cy="95" r="34" fill="none" stroke="#4DD0E1" stroke-width="1" opacity="0.4"/>
+<circle cx="110" cy="95" r="20" fill="#18B4E8" opacity="0.12"/>
+<circle cx="110" cy="95" r="7" fill="#18B4E8"/>
+<!-- HA compass arms -->
+<path d="M88 78L98 95L88 112" stroke="#4DD0E1" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+<path d="M132 78L122 95L132 112" stroke="#4DD0E1" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+<path d="M93 72L110 83L127 72" stroke="#18B4E8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+<path d="M93 118L110 107L127 118" stroke="#18B4E8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+<!-- Text -->
+<text x="110" y="168" fill="#E0F2FE" font-family="monospace" font-size="15" text-anchor="middle" font-weight="bold" letter-spacing="2">HOME</text>
+<text x="110" y="188" fill="#18B4E8" font-family="monospace" font-size="15" text-anchor="middle" font-weight="bold" letter-spacing="2">ASSISTANT</text>
+<!-- Divider -->
+<rect x="35" y="205" width="150" height="2.5" rx="1.25" fill="#18B4E8" opacity="0.25"/>
+<!-- Integration status dots -->
+<circle cx="45" cy="235" r="6" fill="none" stroke="#18B4E8" stroke-width="0.8"/><circle cx="45" cy="235" r="2.5" fill="#18B4E8"/>
+<circle cx="72" cy="235" r="6" fill="none" stroke="#FBBF24" stroke-width="0.8"/><circle cx="72" cy="235" r="2.5" fill="#FBBF24"/>
+<circle cx="99" cy="235" r="6" fill="none" stroke="#10B981" stroke-width="0.8"/><circle cx="99" cy="235" r="2.5" fill="#10B981"/>
+<circle cx="126" cy="235" r="6" fill="none" stroke="#8B5CF6" stroke-width="0.8"/><circle cx="126" cy="235" r="2.5" fill="#8B5CF6"/>
+<circle cx="153" cy="235" r="6" fill="none" stroke="#EC4899" stroke-width="0.8"/><circle cx="153" cy="235" r="2.5" fill="#EC4899"/>
+<circle cx="180" cy="235" r="6" fill="none" stroke="#EF4444" stroke-width="0.8"/><circle cx="180" cy="235" r="2.5" fill="#EF4444"/>
+<!-- Integration count -->
+<text x="110" y="265" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">6 custom integrations</text>
+<!-- GitHub badge -->
+<rect x="55" y="278" width="110" height="18" rx="9" fill="#18B4E8" opacity="0.1" stroke="#18B4E8" stroke-width="0.5"/>
+<text x="110" y="290" fill="#4DD0E1" font-family="monospace" font-size="8" text-anchor="middle">github.com/cnecrea</text>
+</g>
+
+<!-- Connection lines from center to right devices -->
+<g opacity="0.25">
+<line x1="620" y1="200" x2="700" y2="150" stroke="#18B4E8" stroke-width="0.8" stroke-dasharray="4 3"/>
+<line x1="620" y1="250" x2="700" y2="250" stroke="#18B4E8" stroke-width="0.8" stroke-dasharray="4 3"/>
+<line x1="620" y1="340" x2="700" y2="370" stroke="#18B4E8" stroke-width="0.8" stroke-dasharray="4 3"/>
+</g>
+
+<!-- RIGHT: Output Device Cards -->
+<!-- Climate -->
+<g transform="translate(700,60)">
+<rect x="0" y="0" width="95" height="85" rx="14" fill="#1B2838" stroke="#18B4E8" stroke-width="1.2"/>
+<circle cx="48" cy="32" r="14" fill="none" stroke="#4DD0E1" stroke-width="1.3"/>
+<path d="M41 32L48 39L55 32" stroke="#18B4E8" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+<rect x="22" y="52" width="51" height="16" rx="4" fill="#18B4E8" opacity="0.12"/>
+<text x="48" y="63" fill="#18B4E8" font-family="monospace" font-size="8" text-anchor="middle">23.5°C</text>
+<text x="48" y="100" fill="#5EAEC7" font-family="monospace" font-size="9" text-anchor="middle" opacity="0.7">CLIMATE</text>
+</g>
+<!-- Lights -->
+<g transform="translate(700,200)">
+<rect x="0" y="0" width="95" height="85" rx="14" fill="#1B2838" stroke="#FBBF24" stroke-width="1.2"/>
+<circle cx="48" cy="35" r="14" fill="#FBBF24" opacity="0.1"/>
+<path d="M48 23L51 33L62 33L53 39L56 50L48 43L40 50L43 39L34 33L45 33Z" fill="#FBBF24" opacity="0.85"/>
+<text x="48" y="70" fill="#FBBF24" font-family="monospace" font-size="8" text-anchor="middle">ON</text>
+<text x="48" y="100" fill="#B8860B" font-family="monospace" font-size="9" text-anchor="middle" opacity="0.7">LIGHTS</text>
+</g>
+<!-- Lock -->
+<g transform="translate(700,340)">
+<rect x="0" y="0" width="95" height="85" rx="14" fill="#1B2838" stroke="#10B981" stroke-width="1.2"/>
+<rect x="33" y="22" width="30" height="38" rx="4" fill="none" stroke="#10B981" stroke-width="1.3"/>
+<circle cx="48" cy="48" r="5" fill="none" stroke="#34D399" stroke-width="1.3"/>
+<rect x="40" y="25" width="16" height="8" rx="2" fill="#10B981" opacity="0.3"/>
+<text x="48" y="100" fill="#059669" font-family="monospace" font-size="9" text-anchor="middle" opacity="0.7">LOCK</text>
+</g>
+
+<!-- Connection lines from code editor to right devices -->
+<g opacity="0.12">
+<path d="M870 250Q840 250 840 150L795 145" stroke="#18B4E8" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+<path d="M870 250Q840 250 840 250L795 245" stroke="#18B4E8" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+<path d="M870 250Q840 250 840 370L795 380" stroke="#18B4E8" stroke-width="0.8" fill="none" stroke-dasharray="4 3"/>
+</g>
+
+<!-- FAR RIGHT: Code Editor Panel -->
+<g transform="translate(870,68)">
+<rect x="0" y="0" width="530" height="365" rx="18" fill="#1B2838" stroke="#334155" stroke-width="1"/>
+<!-- Title bar -->
+<rect x="12" y="12" width="506" height="24" rx="6" fill="#0F172A"/>
+<circle cx="24" cy="24" r="4.5" fill="#EF4444" opacity="0.7"/>
+<circle cx="37" cy="24" r="4.5" fill="#F59E0B" opacity="0.7"/>
+<circle cx="50" cy="24" r="4.5" fill="#10B981" opacity="0.7"/>
+<text x="260" y="28" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">~/automations/config.yaml</text>
+
+<!-- YAML code -->
+<text x="24" y="58" fill="#7C3AED" font-family="monospace" font-size="11">automation:</text>
+<text x="24" y="75" fill="#64748B" font-family="monospace" font-size="11">  - alias: <tspan fill="#10B981">"Morning routine"</tspan></text>
+<text x="24" y="92" fill="#64748B" font-family="monospace" font-size="11">    trigger:</text>
+<text x="24" y="109" fill="#64748B" font-family="monospace" font-size="11">      - platform: <tspan fill="#18B4E8">time</tspan></text>
+<text x="24" y="126" fill="#64748B" font-family="monospace" font-size="11">        at: <tspan fill="#F59E0B">"07:00:00"</tspan></text>
+<text x="24" y="143" fill="#64748B" font-family="monospace" font-size="11">    action:</text>
+<text x="24" y="160" fill="#64748B" font-family="monospace" font-size="11">      - service: <tspan fill="#18B4E8">light.turn_on</tspan></text>
+<text x="24" y="177" fill="#64748B" font-family="monospace" font-size="11">        target:</text>
+<text x="24" y="194" fill="#64748B" font-family="monospace" font-size="11">          entity_id: <tspan fill="#EC4899">light.bedroom</tspan></text>
+<text x="24" y="211" fill="#64748B" font-family="monospace" font-size="11">      - service: <tspan fill="#18B4E8">climate.set_temp</tspan></text>
+<text x="24" y="228" fill="#64748B" font-family="monospace" font-size="11">        data:</text>
+<text x="24" y="245" fill="#64748B" font-family="monospace" font-size="11">          temperature: <tspan fill="#F59E0B">22</tspan></text>
+
+<!-- Separator line -->
+<line x1="12" y1="260" x2="518" y2="260" stroke="#334155" stroke-width="0.5" opacity="0.5"/>
+
+<!-- Terminal section -->
+<rect x="12" y="268" width="506" height="84" rx="6" fill="#0A0F1A"/>
+<!-- Prompt line 1: cnecrea with full command -->
+<text x="24" y="290" fill="#10B981" font-family="monospace" font-size="10">cnecrea@ha</text>
+<text x="102" y="290" fill="#64748B" font-family="monospace" font-size="10">:</text>
+<text x="108" y="290" fill="#18B4E8" font-family="monospace" font-size="10">~/config</text>
+<text x="165" y="290" fill="#64748B" font-family="monospace" font-size="10">$</text>
+<text x="174" y="290" fill="#CBD5E1" font-family="monospace" font-size="10">hass --check-config</text>
+<!-- Output line -->
+<text x="24" y="308" fill="#10B981" font-family="monospace" font-size="10">✓ Configuration valid!</text>
+<text x="174" y="308" fill="#64748B" font-family="monospace" font-size="10">6 custom integrations loaded</text>
+<!-- Prompt line 2: ready for next command -->
+<text x="24" y="326" fill="#10B981" font-family="monospace" font-size="10">cnecrea@ha</text>
+<text x="102" y="326" fill="#64748B" font-family="monospace" font-size="10">:</text>
+<text x="108" y="326" fill="#18B4E8" font-family="monospace" font-size="10">~/config</text>
+<text x="165" y="326" fill="#64748B" font-family="monospace" font-size="10">$</text>
+<!-- Blinking cursor -->
+<rect x="174" y="318" width="7" height="12" rx="1" fill="#4DD0E1" opacity="0.7"/>
+<!-- Bottom integration badges -->
+<text x="24" y="346" fill="#334155" font-family="monospace" font-size="8">loaded:</text>
+<rect x="70" y="336" width="68" height="14" rx="7" fill="#18B4E8" opacity="0.1" stroke="#18B4E8" stroke-width="0.4"/>
+<text x="104" y="346" fill="#18B4E8" font-family="monospace" font-size="7" text-anchor="middle">hidroelectrica</text>
+<rect x="144" y="336" width="62" height="14" rx="7" fill="#FBBF24" opacity="0.1" stroke="#FBBF24" stroke-width="0.4"/>
+<text x="175" y="346" fill="#FBBF24" font-family="monospace" font-size="7" text-anchor="middle">myelectrica</text>
+<rect x="212" y="336" width="40" height="14" rx="7" fill="#10B981" opacity="0.1" stroke="#10B981" stroke-width="0.4"/>
+<text x="232" y="346" fill="#10B981" font-family="monospace" font-size="7" text-anchor="middle">opcom</text>
+<rect x="258" y="336" width="58" height="14" rx="7" fill="#EF4444" opacity="0.1" stroke="#EF4444" stroke-width="0.4"/>
+<text x="287" y="346" fill="#EF4444" font-family="monospace" font-size="7" text-anchor="middle">eonromania</text>
+<rect x="322" y="336" width="50" height="14" rx="7" fill="#8B5CF6" opacity="0.1" stroke="#8B5CF6" stroke-width="0.4"/>
+<text x="347" y="346" fill="#8B5CF6" font-family="monospace" font-size="7" text-anchor="middle">vehicule</text>
+<rect x="378" y="336" width="55" height="14" rx="7" fill="#EC4899" opacity="0.1" stroke="#EC4899" stroke-width="0.4"/>
+<text x="406" y="346" fill="#EC4899" font-family="monospace" font-size="7" text-anchor="middle">erovinieta</text>
+</g>
+
+<!-- Bottom accent line -->
+<rect x="0" y="490" width="1500" height="10" fill="#0D1B2A"/>
+<rect x="0" y="0" width="1500" height="8" fill="#0D1B2A"/>
+</svg>
