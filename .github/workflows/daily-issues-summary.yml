@@ -2,8 +2,8 @@ name: Rezumat zilnic probleme deschise
 
 on:
   schedule:
-    # Rulează zilnic la 08:00 UTC (11:00 România)
-    - cron: "0 8 * * *"
+    # Rulează luni–vineri la 08:00 UTC (11:00 România)
+    - cron: "0 8 * * 1-5"
   workflow_dispatch:
 
 jobs:
