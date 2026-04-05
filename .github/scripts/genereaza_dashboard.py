@@ -28,6 +28,7 @@ REPO_URI = [
     ("Nova Power & Gas", "vreaulanova", "NOVA - furnizor energie electrica si furnizor gaze naturale pentru consumatori casnici si business"),
     ("OPCOM", "opcom", "Prețuri energie OPCOM"),
     ("Pago Plătește", "pagoplateste", "Ai toate facturile tale într-un singur loc"),
+    ("Rețele Electrice", "reteleelectrice", "Descopera Retele Electrice si afla mai mult despre distributia de electricitate, racordarea la retea sau masurarea consumului de energie."),
     ("SMS.to", "smsto", "Notificări SMS prin SMS.to"),
     ("Vehicule", "vehicule", "Gestionare vehicule și documente"),
     ("Vehicule Card", "vehicule-card", "Custom Lovelace card"),
