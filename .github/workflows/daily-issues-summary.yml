@@ -48,6 +48,7 @@ jobs:
               "vreaulanova":    ("Nova Power & Gas", "https://github.com/cnecrea/vreaulanova"),
               "opcom":          ("OPCOM",            "https://github.com/cnecrea/opcom"),
               "pagoplateste":   ("Pago Plătește",    "https://github.com/cnecrea/pagoplateste"),
+              "reteleelectrice":("Rețele Electrice",    "https://github.com/cnecrea/reteleelectrice"),
               "smsto":          ("SMS.to",           "https://github.com/cnecrea/smsto"),
               "vehicule":       ("Vehicule",         "https://github.com/cnecrea/vehicule"),
           }
