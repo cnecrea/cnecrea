@@ -37,7 +37,7 @@
   </g>
 
   <!-- Main text - Left side -->
-  <text x="60" y="340" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="56" font-weight="800" fill="#2d4059" letter-spacing="-1">Home Assistant</text>
+  <text x="60" y="340" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="56" font-weight="800" fill="#2d4059" letter-spacing="-1">home assistant</text>
   <text x="60" y="410" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="56" font-weight="800" fill="#2d4059" letter-spacing="-1">custom_components</text>
 
   <!-- Subtitle -->
