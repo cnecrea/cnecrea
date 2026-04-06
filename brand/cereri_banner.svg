@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1456 816" width="1456" height="816">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0f4ff"/>
+      <stop offset="100%" stop-color="#e8edf8"/>
+    </linearGradient>
+    <linearGradient id="btn-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#18bcf2"/>
+      <stop offset="100%" stop-color="#049cdb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1456" height="816" fill="url(#bg)"/>
+
+  <!-- HA Logo -->
+  <g transform="translate(60, 190)">
+    <circle cx="42" cy="42" r="38" fill="#18bcf2" opacity="0.08"/>
+    <path d="M42 12 L14 38 L22 38 L22 62 L34 62 L34 48 L50 48 L50 62 L62 62 L62 38 L70 38 Z" fill="#18bcf2" opacity="0.9"/>
+    <circle cx="42" cy="36" r="6" fill="#ffffff" opacity="0.9"/>
+  </g>
+
+  <!-- Main text -->
+  <text x="60" y="340" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="bold" fill="#2d4059" letter-spacing="-1">home assistant</text>
+  <text x="60" y="410" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="bold" fill="#2d4059" letter-spacing="-1">custom_components</text>
+
+  <!-- Subtitle -->
+  <text x="60" y="480" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#6b7a8d">Propune o integrare nouă sau</text>
+  <text x="60" y="515" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#6b7a8d">votează una existentă</text>
+
+  <!-- ============================================= -->
+  <!-- Browser mockup -->
+  <!-- ============================================= -->
+
+  <!-- Shadow (simple rect, no filter) -->
+  <rect x="754" y="86" width="660" height="650" rx="14" fill="#c0c8d8" opacity="0.3"/>
+
+  <!-- Browser frame -->
+  <rect x="750" y="80" width="660" height="650" rx="12" fill="#ffffff" stroke="#dde3ec" stroke-width="1"/>
+
+  <!-- Title bar bg -->
+  <rect x="750" y="80" width="660" height="44" rx="12" fill="#f5f7fa"/>
+  <rect x="750" y="112" width="660" height="12" fill="#f5f7fa"/>
+
+  <!-- Traffic lights -->
+  <circle cx="778" cy="102" r="6" fill="#ff5f57"/>
+  <circle cx="798" cy="102" r="6" fill="#ffbd2e"/>
+  <circle cx="818" cy="102" r="6" fill="#28c840"/>
+
+  <!-- Tab bar -->
+  <rect x="750" y="124" width="660" height="38" fill="#ffffff"/>
+  <rect x="750" y="161" width="660" height="1" fill="#e5e9f0"/>
+
+  <!-- HA house icon in tab bar -->
+  <path d="M782 133 L774 140 L777 140 L777 148 L780 148 L780 143 L784 143 L784 148 L787 148 L787 140 L790 140 Z" fill="#18bcf2"/>
+
+  <!-- Tab text -->
+  <text x="796" y="147" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#1a2332">home assistant</text>
+  <text x="918" y="147" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#6b7a8d">Integrări</text>
+  <text x="990" y="147" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#18bcf2">Componente</text>
+  <rect x="990" y="158" width="85" height="3" rx="1.5" fill="#18bcf2"/>
+  <text x="1094" y="147" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#6b7a8d">Setări</text>
+
+  <!-- Adaugă integrare button -->
+  <rect x="770" y="175" width="200" height="34" rx="8" fill="url(#btn-grad)"/>
+  <text x="822" y="197" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#ffffff">Adaugă integrare</text>
+
+  <!-- Previzualizare button -->
+  <rect x="980" y="175" width="130" height="34" rx="8" fill="#ffffff" stroke="#dde3ec" stroke-width="1"/>
+  <circle cx="1000" cy="192" r="7" fill="none" stroke="#6b7a8d" stroke-width="1.2"/>
+  <text x="1013" y="197" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#4a5568">Previzualizare</text>
+
+  <!-- Download button -->
+  <rect x="1120" y="175" width="34" height="34" rx="8" fill="#ffffff" stroke="#dde3ec" stroke-width="1"/>
+  <text x="1131" y="198" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#6b7a8d">↓</text>
+
+  <!-- Divider -->
+  <rect x="770" y="222" width="620" height="1" fill="#e5e9f0"/>
+
+  <!-- LEFT PANEL bg -->
+  <rect x="770" y="223" width="280" height="497" fill="#fafbfd"/>
+  <rect x="1050" y="223" width="1" height="497" fill="#e5e9f0"/>
+
+  <!-- Section label -->
+  <text x="785" y="252" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="bold" fill="#8895a7" letter-spacing="1">CUSTOM COMPONENTS</text>
+
+  <!-- Component items — simple rounded rects with colored dots -->
+  <!-- ebloc -->
+  <rect x="778" y="264" width="265" height="32" rx="6" fill="#fafbfd"/>
+  <circle cx="796" cy="280" r="6" fill="#4caf50"/>
+  <text x="812" y="285" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#37474f">ebloc</text>
+
+  <!-- erovinieta (selected) -->
+  <rect x="778" y="300" width="265" height="32" rx="6" fill="#e3f2fd"/>
+  <circle cx="796" cy="316" r="6" fill="#1976d2"/>
+  <text x="812" y="321" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#1565c0">erovinieta</text>
+
+  <!-- hidroelectrica -->
+  <rect x="778" y="336" width="265" height="32" rx="6" fill="#fafbfd"/>
+  <circle cx="796" cy="352" r="6" fill="#f57c00"/>
+  <text x="812" y="357" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#37474f">hidroelectrica</text>
+
+  <!-- eonromania -->
+  <rect x="778" y="372" width="265" height="32" rx="6" fill="#fafbfd"/>
+  <circle cx="796" cy="388" r="6" fill="#e91e63"/>
+  <text x="812" y="393" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#37474f">eonromania</text>
+
+  <!-- myelectrica -->
+  <rect x="778" y="408" width="265" height="32" rx="6" fill="#fafbfd"/>
+  <circle cx="796" cy="424" r="6" fill="#5c6bc0"/>
+  <text x="812" y="429" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#37474f">myelectrica</text>
+
+  <!-- myengie -->
+  <rect x="778" y="444" width="265" height="32" rx="6" fill="#fafbfd"/>
+  <circle cx="796" cy="460" r="6" fill="#00897b"/>
+  <text x="812" y="465" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#37474f">myengie</text>
+
+  <!-- opcom -->
+  <rect x="778" y="480" width="265" height="32" rx="6" fill="#fafbfd"/>
+  <circle cx="796" cy="496" r="6" fill="#ffa000"/>
+  <text x="812" y="501" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#37474f">opcom</text>
+
+  <!-- vehicule -->
+  <rect x="778" y="516" width="265" height="32" rx="6" fill="#fafbfd"/>
+  <circle cx="796" cy="532" r="6" fill="#8e24aa"/>
+  <text x="812" y="537" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#37474f">vehicule</text>
+
+  <!-- reteleelectrice -->
+  <rect x="778" y="552" width="265" height="32" rx="6" fill="#fafbfd"/>
+  <circle cx="796" cy="568" r="6" fill="#ef5350"/>
+  <text x="812" y="573" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#37474f">reteleelectrice</text>
+
+  <!-- RIGHT PANEL: Explorer -->
+  <rect x="1051" y="223" width="359" height="497" fill="#ffffff"/>
+
+  <!-- Explorer header -->
+  <rect x="1060" y="235" width="340" height="28" rx="5" fill="#f5f7fa"/>
+  <text x="1075" y="254" font-family="'Courier New', monospace" font-size="11" font-weight="bold" fill="#6b7a8d" letter-spacing="0.5">EXPLORER</text>
+  <text x="1385" y="254" font-family="Arial" font-size="11" fill="#8895a7">···</text>
+
+  <!-- CONFIG label -->
+  <text x="1070" y="290" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#37474f" letter-spacing="0.3">CONFIG</text>
+
+  <!-- custom_components folder (highlighted) -->
+  <rect x="1060" y="300" width="340" height="24" rx="4" fill="#e3f2fd"/>
+  <text x="1078" y="316" font-family="Arial" font-size="10" fill="#1565c0">▾</text>
+  <!-- Folder icon -->
+  <rect x="1092" y="306" width="14" height="10" rx="2" fill="#42a5f5"/>
+  <rect x="1092" y="304" width="8" height="4" rx="1" fill="#42a5f5"/>
+  <text x="1112" y="317" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#1565c0">custom_components</text>
+
+  <!-- Sub-folders with folder icons -->
+  <!-- ebloc -->
+  <text x="1104" y="343" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="333" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="331" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="343" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">ebloc</text>
+
+  <!-- eonromania -->
+  <text x="1104" y="367" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="357" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="355" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="367" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">eonromania</text>
+
+  <!-- erovinieta -->
+  <text x="1104" y="391" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="381" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="379" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="391" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">erovinieta</text>
+
+  <!-- hidroelectrica -->
+  <text x="1104" y="415" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="405" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="403" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="415" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">hidroelectrica</text>
+
+  <!-- myelectrica -->
+  <text x="1104" y="439" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="429" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="427" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="439" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">myelectrica</text>
+
+  <!-- myengie -->
+  <text x="1104" y="463" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="453" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="451" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="463" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">myengie</text>
+
+  <!-- opcom -->
+  <text x="1104" y="487" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="477" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="475" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="487" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">opcom</text>
+
+  <!-- reteleelectrice -->
+  <text x="1104" y="511" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="501" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="499" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="511" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">reteleelectrice</text>
+
+  <!-- vehicule -->
+  <text x="1104" y="535" font-family="Arial" font-size="10" fill="#90a4ae">▸</text>
+  <rect x="1116" y="525" width="11" height="8" rx="1.5" fill="#90caf9"/>
+  <rect x="1116" y="523" width="6" height="3" rx="1" fill="#90caf9"/>
+  <text x="1132" y="535" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#455a64">vehicule</text>
+
+  <!-- Files -->
+  <rect x="1082" y="553" width="9" height="11" rx="1.5" fill="none" stroke="#78909c" stroke-width="1"/>
+  <text x="1098" y="564" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#78909c">configuration.yaml</text>
+
+  <rect x="1082" y="575" width="9" height="11" rx="1.5" fill="none" stroke="#f9a825" stroke-width="1"/>
+  <text x="1098" y="586" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#78909c">secrets.yaml</text>
+
+  <!-- Subtle HA watermark -->
+  <path d="M1220 660 L1200 680 L1204 680 L1204 696 L1212 696 L1212 688 L1228 688 L1228 696 L1236 696 L1236 680 L1240 680 Z" fill="#18bcf2" opacity="0.05"/>
+
+</svg>
