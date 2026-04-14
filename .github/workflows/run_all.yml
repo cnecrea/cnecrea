@@ -1,0 +1,88 @@
+name: "Colectare completă + Dashboard"
+
+on:
+  workflow_dispatch: # Un singur click → totul rulează
+
+permissions:
+  contents: write
+
+env:
+  REPOS: >-
+    cursbnr e-bloc.ro eonromania erovinieta hidroelectrica fleet
+    myelectrica myengie vreaulanova opcom pagoplateste
+    reteleelectrice smsto vehicule vehicule-card
+
+jobs:
+  # ── PASUL 1: Trigger analytics.yml pe fiecare repo slave ──
+  colecteaza:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger analytics pe toate repo-urile
+        env:
+          GH_TOKEN: ${{ secrets.PAT_ANALYTICS }}
+        run: |
+          ok=0; skip=0
+          for repo in $REPOS; do
+            if gh workflow run analytics.yml --repo "cnecrea/$repo" 2>/dev/null; then
+              echo "✅ cnecrea/$repo — triggered"
+              ok=$((ok + 1))
+            else
+              echo "⚠️ cnecrea/$repo — skip (workflow absent)"
+              skip=$((skip + 1))
+            fi
+          done
+          echo ""
+          echo "━━━ Triggered: $ok | Skipped: $skip ━━━"
+
+      - name: Așteaptă finalizarea tuturor
+        env:
+          GH_TOKEN: ${{ secrets.PAT_ANALYTICS }}
+        run: |
+          echo "⏳ Aștept 60s să intre în coadă..."
+          sleep 60
+
+          for repo in $REPOS; do
+            for attempt in $(seq 1 30); do
+              status=$(gh run list \
+                --repo "cnecrea/$repo" \
+                -w "Analiza repository-ului" \
+                -L 1 --json status -q '.[0].status' 2>/dev/null || echo "none")
+              if [ "$status" = "completed" ] || [ "$status" = "none" ]; then
+                echo "✅ $repo"
+                break
+              fi
+              echo "  ⏳ $repo → $status (${attempt}/30)"
+              sleep 20
+            done
+          done
+          echo ""
+          echo "━━━ Toate colectările finalizate ━━━"
+
+  # ── PASUL 2: Generează dashboard-ul agregat ──
+  dashboard:
+    needs: colecteaza
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalează dependențe
+        run: pip install requests
+
+      - name: Generează dashboard
+        env:
+          GH_TOKEN: ${{ secrets.PAT_ANALYTICS }}
+        run: python .github/scripts/genereaza_dashboard.py
+
+      - name: Commit dacă sunt modificări
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --staged --quiet || git commit -m "📈 Actualizare dashboard statistici (manual)"
+          git push
