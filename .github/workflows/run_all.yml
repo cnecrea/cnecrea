@@ -84,5 +84,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git diff --staged --quiet || git commit -m "📈 Actualizare dashboard statistici (manual)"
+          git diff --staged --quiet || git commit -m "📈 Actualizare dashboard statistici"
           git push
