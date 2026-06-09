@@ -13,26 +13,26 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 <!-- DASHBOARD_START -->
 ## 📈 Statistici integrări
 
-<sub>Ultima actualizare: 08.06.2026 14:52 (automat, zilnic)</sub>
+<sub>Ultima actualizare: 09.06.2026 13:30 (automat, zilnic)</sub>
 
 | Integrare | Versiune | ⭐ Stars | 📥 Instalări | 👁 Vizitatori (14z) | 🔄 Clone (14z) |
 |:----------|:--------:|:--------:|:------------:|:-------------------:|:--------------:|
-| [Curs BNR](https://github.com/cnecrea/cursbnr) | `1.3.0` | 23 | 2.2k | 6 | 99 |
-| [E-bloc România](https://github.com/cnecrea/e-bloc.ro) | `1.5.5` | 23 | 2.2k | 18 | 106 |
-| [E.ON România](https://github.com/cnecrea/eonromania) | `4.1.3` | 55 | 3.8k | 28 | 133 |
-| [CNAIR eRovinieta](https://github.com/cnecrea/erovinieta) | `2.10.3` | 39 | 2.7k | 27 | 119 |
-| [Hidroelectrica](https://github.com/cnecrea/hidroelectrica) | `3.8.4` | 99 | 3.0k | 59 | 126 |
-| [Manager de flotă](https://github.com/cnecrea/fleet) | `1.5.4` | 1 | 2.3k | 2 | 93 |
-| [MyElectrica](https://github.com/cnecrea/myelectrica) | `2.9.3` | 24 | 3.0k | 22 | 105 |
-| [MyENGIE](https://github.com/cnecrea/myengie) | `1.5.7` | 9 | 1.8k | 15 | 109 |
-| [Nova Power & Gas](https://github.com/cnecrea/vreaulanova) | `1.3.6` | 2 | 3.1k | 7 | 112 |
-| [OPCOM](https://github.com/cnecrea/opcom) | `2.2.3` | 4 | 2.7k | 10 | 110 |
-| [Pago Plătește](https://github.com/cnecrea/pagoplateste) | `1.4.4` | 8 | 1.8k | 12 | 84 |
-| [Rețele Electrice](https://github.com/cnecrea/reteleelectrice) | `1.1.6` | 5 | 1.6k | 13 | 133 |
-| [SMS.to](https://github.com/cnecrea/smsto) | `2.0.0` | 3 | 1.8k | 8 | 109 |
-| [Vehicule](https://github.com/cnecrea/vehicule) | `2.3.3` | 17 | 4.6k | 11 | 108 |
-| [Vehicule Card](https://github.com/cnecrea/vehicule-card) | `1.3.0` | 6 | 1.8k | 5 | 101 |
-| **TOTAL** | | **318** | **38.5k** | **243** | **1647** |
+| [Curs BNR](https://github.com/cnecrea/cursbnr) | `1.3.0` | 23 | 2.2k | 6 | 89 |
+| [E-bloc România](https://github.com/cnecrea/e-bloc.ro) | `1.5.5` | 23 | 2.2k | 17 | 101 |
+| [E.ON România](https://github.com/cnecrea/eonromania) | `4.1.3` | 55 | 3.8k | 26 | 120 |
+| [CNAIR eRovinieta](https://github.com/cnecrea/erovinieta) | `2.10.3` | 39 | 2.7k | 25 | 106 |
+| [Hidroelectrica](https://github.com/cnecrea/hidroelectrica) | `3.8.4` | 99 | 3.0k | 52 | 121 |
+| [Manager de flotă](https://github.com/cnecrea/fleet) | `1.5.4` | 1 | 2.3k | 2 | 87 |
+| [MyElectrica](https://github.com/cnecrea/myelectrica) | `2.9.3` | 24 | 3.0k | 19 | 97 |
+| [MyENGIE](https://github.com/cnecrea/myengie) | `1.5.7` | 9 | 1.8k | 13 | 102 |
+| [Nova Power & Gas](https://github.com/cnecrea/vreaulanova) | `1.3.6` | 2 | 3.1k | 7 | 107 |
+| [OPCOM](https://github.com/cnecrea/opcom) | `2.2.3` | 4 | 2.7k | 8 | 101 |
+| [Pago Plătește](https://github.com/cnecrea/pagoplateste) | `1.4.4` | 8 | 1.8k | 10 | 82 |
+| [Rețele Electrice](https://github.com/cnecrea/reteleelectrice) | `1.1.6` | 5 | 1.6k | 8 | 127 |
+| [SMS.to](https://github.com/cnecrea/smsto) | `2.0.0` | 3 | 1.8k | 8 | 101 |
+| [Vehicule](https://github.com/cnecrea/vehicule) | `2.3.3` | 17 | 4.6k | 9 | 97 |
+| [Vehicule Card](https://github.com/cnecrea/vehicule-card) | `1.3.0` | 6 | 1.8k | 4 | 96 |
+| **TOTAL** | | **318** | **38.5k** | **214** | **1534** |
 
 <sub>📈 Datele se actualizează zilnic prin GitHub Actions. Vizitatori/Clone = ultimele 14 zile (limită API GitHub). Toate integrările sunt disponibile prin <a href="https://hacs.xyz/">HACS</a> (Custom repositories).</sub>
 <!-- DASHBOARD_END -->
