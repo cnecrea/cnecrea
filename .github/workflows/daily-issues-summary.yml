@@ -41,6 +41,7 @@ jobs:
               "e-bloc.ro":      ("E-bloc România",   "https://github.com/cnecrea/e-bloc.ro"),
               "eonromania":     ("E.ON România",     "https://github.com/cnecrea/eonromania"),
               "erovinieta":     ("CNAIR eRovinieta",       "https://github.com/cnecrea/erovinieta"),
+              "tollro":     ("CNAIR eToll",       "https://github.com/cnecrea/tollro"),
               "hidroelectrica": ("Hidroelectrica",   "https://github.com/cnecrea/hidroelectrica"),
               "fleet":          ("Manager de flota", "https://github.com/cnecrea/fleet"),
               "myelectrica":    ("MyElectrica",      "https://github.com/cnecrea/myelectrica"),
