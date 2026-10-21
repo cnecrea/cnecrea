@@ -8,7 +8,7 @@ permissions:
 
 env:
   REPOS: >-
-    cursbnr e-bloc.ro eonromania erovinieta hidroelectrica fleet
+    cursbnr e-bloc.ro eonromania erovinieta tollro hidroelectrica fleet
     myelectrica myengie vreaulanova opcom pagoplateste
     reteleelectrice smsto vehicule vehicule-card
 
