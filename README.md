@@ -13,15 +13,15 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 <!-- DASHBOARD_START -->
 ## 📈 Statistici integrări
 
-<sub>Ultima actualizare: 26.10.2026 17:00 (automat, zilnic)</sub>
+<sub>Ultima actualizare: 26.10.2026 23:32 (automat, zilnic)</sub>
 
 | Integrare | Versiune | ⭐ Stars | 📥 Instalări | 👁 Vizitatori (14z) | 🔄 Clone (14z) |
 |:----------|:--------:|:--------:|:------------:|:-------------------:|:--------------:|
-| [Curs BNR](https://github.com/cnecrea/cursbnr) | `1.3.0` | 24 | 3.7k | 11 | 60 |
+| [Curs BNR](https://github.com/cnecrea/cursbnr) | `1.3.0` | 25 | 3.7k | 11 | 60 |
 | [E-bloc România](https://github.com/cnecrea/e-bloc.ro) | `1.5.6` | 25 | 3.6k | 52 | 62 |
 | [E.ON România](https://github.com/cnecrea/eonromania) | `4.1.4` | 55 | 5.5k | 33 | 71 |
 | [~~CNAIR eRovinieta~~](https://github.com/cnecrea/erovinieta) | `2.10.3` | 41 | 4.0k | 0 | 0 |
-| [CNAIR eToll](https://github.com/cnecrea/tollro) | `1.0.0` | 5 | 237 | 48 | 116 |
+| [CNAIR eToll](https://github.com/cnecrea/tollro) | `1.1.0` | 8 | 237 | 48 | 116 |
 | [Hidroelectrica](https://github.com/cnecrea/hidroelectrica) | `3.8.5` | 105 | 4.6k | 65 | 100 |
 | [Manager de flotă](https://github.com/cnecrea/fleet) | `1.5.4` | 1 | 3.7k | 5 | 42 |
 | [MyElectrica](https://github.com/cnecrea/myelectrica) | `2.9.4` | 24 | 4.6k | 23 | 82 |
@@ -33,7 +33,7 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 | [SMS.to](https://github.com/cnecrea/smsto) | `2.0.1` | 4 | 3.2k | 8 | 76 |
 | [Vehicule](https://github.com/cnecrea/vehicule) | `2.3.4` | 21 | 6.2k | 16 | 85 |
 | [Vehicule Card](https://github.com/cnecrea/vehicule-card) | `1.3.0` | 7 | 2.7k | 0 | 0 |
-| **TOTAL** | | **349** | **60.2k** | **322** | **981** |
+| **TOTAL** | | **353** | **60.2k** | **322** | **981** |
 
 <sub>📈 Datele se actualizează zilnic prin GitHub Actions. Vizitatori/Clone = ultimele 14 zile (limită API GitHub). Toate integrările sunt disponibile prin <a href="https://hacs.xyz/">HACS</a> (Custom repositories).</sub>
 <!-- DASHBOARD_END -->
