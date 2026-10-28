@@ -13,7 +13,7 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 <!-- DASHBOARD_START -->
 ## 📈 Statistici integrări
 
-<sub>Ultima actualizare: 28.10.2026 16:53 (automat, zilnic)</sub>
+<sub>Ultima actualizare: 28.10.2026 22:21 (automat, zilnic)</sub>
 
 | Integrare | Versiune | ⭐ Stars | 📥 Instalări | 👁 Vizitatori (14z) | 🔄 Clone (14z) |
 |:----------|:--------:|:--------:|:------------:|:-------------------:|:--------------:|
@@ -26,7 +26,7 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 | [Manager de flotă](https://github.com/cnecrea/fleet) | `1.5.4` | 1 | 3.7k | 4 | 47 |
 | [MyElectrica](https://github.com/cnecrea/myelectrica) | `2.9.4` | 24 | 4.7k | 28 | 106 |
 | [MyENGIE](https://github.com/cnecrea/myengie) | `1.5.8` | 11 | 3.2k | 13 | 91 |
-| [Nova Power & Gas](https://github.com/cnecrea/vreaulanova) | `1.3.7` | 2 | 4.7k | 6 | 75 |
+| [Nova Power & Gas](https://github.com/cnecrea/vreaulanova) | `2.0.0` | 2 | 4.7k | 6 | 75 |
 | [OPCOM](https://github.com/cnecrea/opcom) | `2.2.4` | 8 | 4.2k | 27 | 70 |
 | [Pago Plătește](https://github.com/cnecrea/pagoplateste) | `1.4.5` | 9 | 3.3k | 8 | 64 |
 | [Rețele Electrice](https://github.com/cnecrea/reteleelectrice) | `1.1.7` | 8 | 3.0k | 16 | 73 |
