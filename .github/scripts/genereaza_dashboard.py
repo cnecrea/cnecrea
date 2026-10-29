@@ -22,6 +22,7 @@ REPO_URI = [
     ("E.ON România", "eonromania", "Monitorizare consum energie E.ON"),
     ("~~CNAIR eRovinieta~~", "erovinieta", "~~Verificare roviniete~~"),
     ("CNAIR eToll", "tollro", "Verificare roviniete"),
+    ("DIGI România", "digi", "Monitorizează contul tău"),
     ("Hidroelectrica", "hidroelectrica", "Monitorizare consum Hidroelectrica"),
     ("Manager de flotă", "fleet", "Manager de flotă pentru transportatori"),
     ("MyElectrica", "myelectrica", "Monitorizare consum Electrica"),
