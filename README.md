@@ -13,7 +13,7 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 <!-- DASHBOARD_START -->
 ## 📈 Statistici integrări
 
-<sub>Ultima actualizare: 29.10.2026 16:59 (automat, zilnic)</sub>
+<sub>Ultima actualizare: 29.10.2026 23:19 (automat, zilnic)</sub>
 
 | Integrare | Versiune | ⭐ Stars | 📥 Instalări | 👁 Vizitatori (14z) | 🔄 Clone (14z) |
 |:----------|:--------:|:--------:|:------------:|:-------------------:|:--------------:|
@@ -22,6 +22,7 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 | [E.ON România](https://github.com/cnecrea/eonromania) | `4.1.6` | 55 | 5.7k | 45 | 149 |
 | [~~CNAIR eRovinieta~~](https://github.com/cnecrea/erovinieta) | `2.10.3` | 41 | 4.0k | 0 | 0 |
 | [CNAIR eToll](https://github.com/cnecrea/tollro) | `1.1.0` | 8 | 358 | 80 | 158 |
+| [DIGI România](https://github.com/cnecrea/digi) | `—` | 0 | 0 | 0 | 0 |
 | [Hidroelectrica](https://github.com/cnecrea/hidroelectrica) | `3.8.5` | 106 | 4.7k | 89 | 134 |
 | [Manager de flotă](https://github.com/cnecrea/fleet) | `1.5.4` | 1 | 3.8k | 5 | 58 |
 | [MyElectrica](https://github.com/cnecrea/myelectrica) | `2.9.4` | 24 | 4.7k | 28 | 110 |
