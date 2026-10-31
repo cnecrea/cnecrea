@@ -13,12 +13,12 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 <!-- DASHBOARD_START -->
 ## 📈 Statistici integrări
 
-<sub>Ultima actualizare: 31.10.2026 16:26 (automat, zilnic)</sub>
+<sub>Ultima actualizare: 01.11.2026 02:12 (automat, zilnic)</sub>
 
 | Integrare | Versiune | ⭐ Stars | 📥 Instalări | 👁 Vizitatori (14z) | 🔄 Clone (14z) |
 |:----------|:--------:|:--------:|:------------:|:-------------------:|:--------------:|
 | [Curs BNR](https://github.com/cnecrea/cursbnr) | `1.4.0` | 26 | 3.8k | 13 | 125 |
-| [E-bloc România](https://github.com/cnecrea/e-bloc.ro) | `1.5.6` | 25 | 3.7k | 54 | 91 |
+| [E-bloc România](https://github.com/cnecrea/e-bloc.ro) | `1.6.0` | 25 | 3.7k | 54 | 91 |
 | [E.ON România](https://github.com/cnecrea/eonromania) | `4.1.6` | 55 | 5.8k | 54 | 185 |
 | [~~CNAIR eRovinieta~~](https://github.com/cnecrea/erovinieta) | `2.10.3` | 41 | 4.0k | 0 | 0 |
 | [CNAIR eToll](https://github.com/cnecrea/tollro) | `1.1.0` | 8 | 403 | 115 | 177 |
