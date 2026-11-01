@@ -507,15 +507,78 @@ jobs:
           print(subiect)
           PYTHONEOF
 
+      # Semnat DKIM (selectorul github2026, cheia în secretul DKIM_GITHUB_KEY), ca DMARC să treacă:
+      # Gmail pune contul lui ca expeditor tehnic, deci SPF nu se aliniază niciodată cu hubinteligent.org.
+      # Fără secret sau fără dkimpy, emailul pleacă nesemnat, cu un avertisment pe pagina rulării.
       - name: Trimite email
-        uses: dawidd6/action-send-mail@v18
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.EMAIL_USER }}
-          password: ${{ secrets.EMAIL_PASS }}
-          subject: ${{ steps.rezumat.outputs.subject }}
-          to: ${{ secrets.EMAIL_TO }}
-          from: "GitHub Workflows <github@hubinteligent.org>"
-          html_body: file://rezumat.html
-          body: file://rezumat.txt
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          DKIM_KEY: ${{ secrets.DKIM_GITHUB_KEY }}
+          SUBIECT: ${{ steps.rezumat.outputs.subject }}
+        run: |
+          # dkimpy din arhiva Ubuntu (pachet semnat, aceeași bibliotecă ca la cronul serverului)
+          if [ -n "$DKIM_KEY" ]; then
+            { sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends python3-dkim; } >/dev/null \
+              || echo "::warning::Nu am putut instala python3-dkim"
+          fi
+          /usr/bin/python3 << 'PYTHONEOF'
+          import os
+          import smtplib
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+          from email.utils import formatdate, getaddresses, make_msgid
+
+          DOMENIU = "hubinteligent.org"
+          SELECTOR = "github2026"
+          EXPEDITOR = "github@" + DOMENIU
+          ANTETE_SEMNATE = [b"from", b"to", b"subject", b"date", b"message-id", b"mime-version", b"content-type"]
+
+          def avertisment(text):
+              print("::warning::" + text)
+
+          destinatari = [a for _, a in getaddresses([os.environ["EMAIL_TO"]]) if a]
+          msg = MIMEMultipart("alternative")
+          msg["From"] = "GitHub Workflows <" + EXPEDITOR + ">"
+          msg["To"] = ", ".join(destinatari)
+          msg["Subject"] = os.environ["SUBIECT"]
+          msg["Date"] = formatdate(localtime=True)
+          msg["Message-ID"] = make_msgid(domain=DOMENIU)
+          for fisier, tip in (("rezumat.txt", "plain"), ("rezumat.html", "html")):
+              with open(fisier, encoding="utf-8") as f:
+                  msg.attach(MIMEText(f.read(), tip, "utf-8"))
+          # Exact octeții care pleacă: după semnare mesajul nu se mai atinge
+          raw = msg.as_bytes(policy=msg.policy.clone(linesep="\r\n"))
+
+          def semneaza(raw):
+              cheie = os.environ.get("DKIM_KEY", "").replace("\r\n", "\n").strip().encode()
+              if not cheie:
+                  avertisment("Secretul DKIM_GITHUB_KEY lipsește: rezumatul pleacă nesemnat și nu trece DMARC.")
+                  return raw, False
+              try:
+                  import dkim
+              except ImportError:
+                  avertisment("python3-dkim nu e instalat: rezumatul pleacă nesemnat și nu trece DMARC.")
+                  return raw, False
+              try:
+                  semnatura = dkim.sign(raw, SELECTOR.encode(), DOMENIU.encode(), cheie + b"\n",
+                                        canonicalize=(b"relaxed", b"relaxed"), include_headers=ANTETE_SEMNATE)
+              except Exception as e:
+                  avertisment("Semnarea DKIM a eșuat (" + str(e) + "): rezumatul pleacă nesemnat.")
+                  return raw, False
+              # Verificare cu cheia publicată în DNS: prinde un secret care nu mai corespunde înregistrării
+              try:
+                  if not dkim.verify(semnatura + raw):
+                      avertisment("Semnătura nu se verifică cu " + SELECTOR + "._domainkey." + DOMENIU
+                                  + ": cheia din secret nu corespunde celei din DNS.")
+              except Exception as e:
+                  avertisment("Nu am putut verifica semnătura cu DNS-ul (" + str(e) + ").")
+              return semnatura + raw, True
+
+          data, semnat = semneaza(raw)
+          with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=60) as smtp:
+              smtp.login(os.environ["EMAIL_USER"], os.environ["EMAIL_PASS"])
+              smtp.sendmail(EXPEDITOR, destinatari, data)
+          print("Trimis" + (", semnat DKIM (" + SELECTOR + ")" if semnat else ", nesemnat") + ".")
+          PYTHONEOF
