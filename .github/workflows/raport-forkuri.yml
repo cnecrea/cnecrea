@@ -112,10 +112,45 @@ jobs:
 
           with open("forkuri.txt", "w", encoding="utf-8") as f:
               f.write("\n".join(linii) + "\n")
-          pagina = ('<!doctype html><html><body style="font-family:Arial,sans-serif;color:#16202c">'
-                    f'<h2>Raport fork-uri GitHub</h2><p>{html.escape(moment)} · {noi} noi în ultimele 24h · {total} în total</p>'
-                    '<table cellpadding="6" cellspacing="0" border="1"><tr><th>Repository</th><th>Fork-uri</th><th>Stare</th></tr>'
-                    + "".join(tabel) + "</table>" + "".join(sectiuni) + "</body></html>")
+          # Card responsive, dark mode și ierarhie vizuală aliniate cu rezumatul zilnic.
+          SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+          FUNDAL, CARD, LINIE = "#f2f4f7", "#ffffff", "#e3e7ec"
+          TEXT, TEXT_2, TEXT_3 = "#16202c", "#4a5565", "#677283"
+          ACCENT, EROARE = "#c2410c", "#b42318"
+          def esc(s): return html.escape(str(s), quote=True)
+          def txt(n,c,w=400,x="",k=""):
+              clase={TEXT:"c-t1",TEXT_2:"c-t2",TEXT_3:"c-t3",ACCENT:"c-acc",EROARE:"c-err"}
+              return 'class="'+clase.get(c,"")+" "+k+'" style="margin:0;font-family:'+SANS+';font-size:'+str(n)+'px;line-height:'+str(n+7)+'px;color:'+c+';font-weight:'+str(w)+';'+x+'"'
+          def a(url,label,color=TEXT,extra=""):
+              clase={TEXT:"c-t1",TEXT_2:"c-t2",TEXT_3:"c-t3"}
+              return '<a href="'+esc(url)+'" class="'+clase.get(color,"")+'" style="color:'+color+';text-decoration:none;'+extra+'">'+label+'</a>'
+          tab='role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"'
+          randuri=[]; detalii=[]; fara=[]
+          for r in raport:
+              n=len(r["forkuri"]); bord='border-top:1px solid '+LINIE+';'
+              nume=a(r["url"],esc(r["nume"]),TEXT,"font-weight:500;")
+              stare='<span '+txt(13,EROARE)+'>eroare la citire</span>' if r["eroare"] else '<span '+txt(14,TEXT if n else TEXT_3,600)+ '>'+str(n)+'</span>'
+              randuri.append('<tr><td style="padding:12px 0;'+bord+'"><span '+txt(14,TEXT)+'>'+nume+'</span></td><td width="48" align="right" style="padding:12px 0;'+bord+'">'+stare+'</td></tr>')
+              if not n and not r["eroare"]: fara.append(nume); continue
+              titlu='<table '+tab+'><tr><td style="padding-bottom:8px"><span '+txt(14,TEXT,600)+'>'+a(r["url"],esc(r["nume"]))+'</span><span '+txt(13,TEXT_3)+'>&nbsp;&nbsp;·&nbsp;&nbsp;'+str(n)+' fork-uri</span></td><td align="right"><span '+txt(13,TEXT_3)+'>'+a(r["url"]+"/forks","Vezi pe GitHub&nbsp;&rarr;",TEXT_3)+'</span></td></tr></table>'
+              items=[]
+              if r["eroare"]: items.append('<tr><td style="padding:12px 0;border-top:1px solid '+LINIE+'"><span '+txt(13,EROARE)+'>Nu s-a putut citi repository-ul ('+esc(r["eroare"])+').</span></td></tr>')
+              for f in r["forkuri"]:
+                  data=f["created"].astimezone(ZoneInfo("Europe/Madrid")); nou=f["created"]>=prag_nou
+                  badge=('&nbsp;<span class="c-plin" style="display:inline-block;padding:0 6px;border-radius:999px;background:'+ACCENT+';font-family:'+SANS+';font-size:11px;line-height:16px;font-weight:600;color:#fff">nou</span>') if nou else ""
+                  meta=esc(f["owner"])+"&nbsp;&middot;&nbsp;"+data.strftime("%d.%m.%Y %H:%M")
+                  items.append('<tr><td class="c-linie" style="padding:12px 0;border-top:1px solid '+LINIE+'"><p '+txt(14,TEXT,600)+'>'+a(f["url"],esc(f["nume"]))+badge+'</p><p '+txt(12,TEXT_3, x="padding-top:4px;")+'>'+meta+'</p></td></tr>')
+              detalii.append('<div style="padding-top:20px">'+titlu+'<table '+tab+'>'+''.join(items)+'</table></div>')
+          sect=[ '<p '+txt(11,TEXT_3,600,"letter-spacing:0.08em;text-transform:uppercase;")+'>Raport zilnic de fork-uri</p><p '+txt(13,TEXT_3,x="padding-top:4px;")+'>'+esc(moment)+'</p><p '+txt(16,TEXT_2,x="padding-top:24px;")+'><span class="c-t1" style="font-size:44px;line-height:48px;font-weight:700;color:'+TEXT+';letter-spacing:-0.02em">'+str(total)+'</span>&nbsp; fork-uri în total</p><p '+txt(13,TEXT_2,x="padding-top:10px;")+'><span class="c-acc" style="color:'+ACCENT+';font-weight:600">'+str(noi)+' noi în ultimele 24h</span></p>', '<p '+txt(11,TEXT_3,600,"letter-spacing:0.08em;text-transform:uppercase;")+'>Repository-uri</p><table '+tab+' style="margin-top:4px">'+''.join(randuri)+'</table>' ]
+          if fara: sect.append('<p class="c-linie" style="margin:0;padding-top:12px;border-top:1px solid '+LINIE+';font-family:'+SANS+';font-size:13px;line-height:20px;color:'+TEXT_3+'"><strong style="color:'+TEXT_2+'">Fără fork-uri ('+str(len(fara))+')</strong>&nbsp; '+' &middot; '.join(fara)+'</p>')
+          if detalii: sect.append('<p '+txt(11,TEXT_3,600,"letter-spacing:0.08em;text-transform:uppercase;")+'>Detalii fork-uri</p>'+''.join(detalii))
+          corp=''.join('<tr><td class="px c-linie" style="padding:32px;'+('border-top:1px solid '+LINIE+';' if i else '')+'">'+s+'</td></tr>' for i,s in enumerate(sect))
+          css=(':root{color-scheme:light dark;supported-color-schemes:light dark;}body{margin:0;padding:0;-webkit-text-size-adjust:100%;}@media only screen and (max-width:620px){.wrap{padding:16px!important}.px{padding:24px 20px!important}}@media(prefers-color-scheme:dark){.c-fundal{background:#0d1117!important}.c-card{background:#161b22!important;border-color:#30363d!important}.c-linie{border-color:#30363d!important}.c-t1{color:#e6edf3!important}.c-t2{color:#b1bac4!important}.c-t3{color:#8b949e!important}.c-acc{color:#f0883e!important}.c-err{color:#ff7b72!important}.c-plin{background:#db6d28!important}}')
+          subsol="Trimis automat de GitHub Actions"
+          if os.getenv("GITHUB_RUN_ID"):
+              rulare=os.getenv("GITHUB_SERVER_URL","https://github.com")+"/"+os.getenv("GITHUB_REPOSITORY","")+"/actions/runs/"+os.getenv("GITHUB_RUN_ID")
+              subsol+=" &middot; "+a(rulare,"Vezi rularea",TEXT_3,"text-decoration:underline;")
+          pagina=('<!DOCTYPE html><html lang="ro"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"><title>Raport fork-uri GitHub</title><style>'+css+'</style></head><body class="c-fundal" style="margin:0;padding:0;background:'+FUNDAL+'"><table '+tab+' class="c-fundal" bgcolor="'+FUNDAL+'" style="background:'+FUNDAL+'"><tr><td align="center" class="wrap" style="padding:32px 16px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="c-card" bgcolor="'+CARD+'" style="max-width:600px;background:'+CARD+';border:1px solid '+LINIE+';border-radius:12px;border-collapse:separate">'+corp+'</table><table '+tab+' style="max-width:600px"><tr><td align="center" style="padding:16px 32px 0"><p '+txt(12,TEXT_3)+'>'+subsol+'</p></td></tr></table></td></tr></table></body></html>')
           with open("forkuri.html", "w", encoding="utf-8") as f:
               f.write(pagina)
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
