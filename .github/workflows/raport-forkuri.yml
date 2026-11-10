@@ -1,0 +1,613 @@
+name: Raport zilnic fork-uri GitHub
+
+on:
+  schedule:
+    # Zilnic la 08:17 UTC; raportul pune în față fork-urile din ultimele 24h, apoi pe cele mai vechi, pe persoane.
+    - cron: "17 8 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  raport-forkuri:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Colectează fork-urile și generează raportul
+        id: raport
+        run: |
+          python3 << 'PYTHONEOF'
+          import html
+          import json
+          import os
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
+
+          owner = "cnecrea"
+          repos = {
+              "reteleelectrice": "Rețele Electrice",
+              "opcom": "OPCOM",
+              "fleet": "Manager de flotă",
+              "vehicule": "Vehicule",
+              "vreaulanova": "Nova Power & Gas",
+          }
+          tz = ZoneInfo("Europe/Madrid")
+          acum = datetime.now(timezone.utc)
+          prag_nou = acum - timedelta(hours=24)
+          acum_local = acum.astimezone(tz)
+          azi = acum_local.date()
+          ieri = azi - timedelta(days=1)
+          ZILE = ("luni", "marți", "miercuri", "joi", "vineri", "sâmbătă", "duminică")
+          LUNI = ("ianuarie", "februarie", "martie", "aprilie", "mai", "iunie", "iulie", "august", "septembrie",
+                  "octombrie", "noiembrie", "decembrie")
+          LUNI_SCURT = ("ian", "feb", "mar", "apr", "mai", "iun", "iul", "aug", "sep", "oct", "nov", "dec")
+          moment = acum_local.strftime("%d.%m.%Y, %H:%M")
+          moment_lung = f"{ZILE[azi.weekday()].capitalize()}, {azi.day} {LUNI[azi.month - 1]} {azi.year}"
+          SAPTAMANI = 12   # cât arată calendarul
+          MAX_NOI = 8        # persoane cu fork-uri noi arătate pe larg
+          MAX_PERSOANE = 12  # peste atât, cele mai vechi se strâng într-un rând (Gmail taie emailurile peste ~100 KB)
+          headers = {"Accept": "application/vnd.github+json",
+                     "X-GitHub-Api-Version": "2022-11-28",
+                     "User-Agent": "raport-forkuri-cnecrea"}
+
+          def preia(repo):
+              toate = []
+              for pagina in range(1, 101):
+                  query = urllib.parse.urlencode({"sort": "newest", "per_page": 100, "page": pagina})
+                  url = f"https://api.github.com/repos/{owner}/{repo}/forks?{query}"
+                  cerere = urllib.request.Request(url, headers=headers)
+                  with urllib.request.urlopen(cerere, timeout=30) as raspuns:
+                      lot = json.load(raspuns)
+                  toate.extend(lot)
+                  if len(lot) < 100:
+                      break
+              return toate
+
+          def data_iso(text):
+              return datetime.fromisoformat(text.replace("Z", "+00:00"))
+
+          # ——— Datele: pe integrări, apoi pe persoane ———
+          raport = []
+          for repo, nume in repos.items():
+              item = {"repo": repo, "nume": nume, "url": f"https://github.com/{owner}/{repo}",
+                      "forkuri": [], "eroare": None}
+              try:
+                  for fork in preia(repo):
+                      autor = fork.get("owner") or {}
+                      login = autor.get("login") or "necunoscut"
+                      nume_fork = fork.get("name") or repo
+                      created = data_iso(fork["created_at"])
+                      # La creare, pushed_at e al repo-ului tău (mai vechi decât fork-ul); dacă e mai nou, cineva a împins în fork.
+                      push = data_iso(fork["pushed_at"]) if fork.get("pushed_at") else None
+                      av = autor.get("avatar_url") or ""
+                      item["forkuri"].append({
+                          "login": login,
+                          "profil": autor.get("html_url") or f"https://github.com/{login}",
+                          "poza": av + ("&" if "?" in av else "?") + "s=80" if av else "",
+                          "url": fork.get("html_url", ""),
+                          "integrare": nume,
+                          # numele tehnic apare doar când diferă de repo-ul tău
+                          "redenumit": nume_fork if nume_fork.lower() != repo.lower() else None,
+                          "created": created,
+                          "push": push if push and push > created + timedelta(minutes=2) else None,
+                      })
+                  item["forkuri"].sort(key=lambda f: f["created"], reverse=True)
+              except urllib.error.HTTPError as e:
+                  item["eroare"] = "HTTP " + str(e.code)
+              except Exception as e:
+                  item["eroare"] = type(e).__name__
+              for f in item["forkuri"]:
+                  f["nou"] = f["created"] >= prag_nou
+                  f["local"] = f["created"].astimezone(tz)
+              raport.append(item)
+
+          citite = [r for r in raport if not r["eroare"]]
+          erori_lista = [r for r in raport if r["eroare"]]
+          toate = sorted((f for r in citite for f in r["forkuri"]), key=lambda f: f["created"], reverse=True)
+          noi_lista = [f for f in toate if f["nou"]]
+          persoane = {}
+          for f in toate:
+              persoane.setdefault(f["login"], {"login": f["login"], "profil": f["profil"], "poza": f["poza"],
+                                               "forkuri": []})["forkuri"].append(f)
+          lista_pers = list(persoane.values())  # deja în ordinea celui mai recent fork
+          for pers in lista_pers:  # al câtelea fork al contului e fiecare (1 = primul)
+              for k, f in enumerate(reversed(pers["forkuri"]), 1):
+                  f["rang"] = k
+          total, noi, erori = len(toate), len(noi_lista), len(erori_lista)
+          pers_noi = sum(1 for p in lista_pers if p["forkuri"][-1]["nou"])
+
+          def numar(n, unu, mai_multe):
+              """Acordul cu numărul: „1 fork”, „5 fork-uri”, „20 de fork-uri”."""
+              if n == 1:
+                  return f"1 {unu}"
+              de = n % 100 >= 20 or (n >= 100 and n % 100 == 0)
+              return f"{n} {'de ' if de else ''}{mai_multe}"
+
+          def zi(d):
+              return "azi" if d.date() == azi else "ieri" if d.date() == ieri else d.strftime("%d.%m.%Y")
+
+          def cand(d):
+              return f"{zi(d)}, {d:%H:%M}"
+
+          def context(f):
+              return "primul fork de la acest cont" if f["rang"] == 1 else f'al {f["rang"]}-lea fork de la acest cont'
+
+          if toate:
+              zile = (azi - toate[0]["local"].date()).days
+              ultimul_text = "azi" if zile == 0 else "ieri" if zile == 1 else "acum " + numar(zile, "zi", "zile")
+          else:
+              ultimul_text = "—"
+
+          # Vestea (fork-urile din ultimele 24 de ore) și lista de sub ea (cele mai vechi), amândouă pe persoane:
+          # fiecare fork apare o singură dată
+          noi_pers, vechi_pers = [], []
+          for pers in lista_pers:
+              proaspete = [f for f in pers["forkuri"] if f["nou"]]
+              fl = [f for f in pers["forkuri"] if not f["nou"]]
+              if proaspete:
+                  noi_pers.append({**pers, "forkuri": proaspete, "vechi": len(fl)})
+              if fl:
+                  vechi_pers.append({**pers, "forkuri": fl})
+          vechi_pers.sort(key=lambda x: x["forkuri"][0]["created"], reverse=True)
+          afisate, restul = vechi_pers[:MAX_PERSOANE], vechi_pers[MAX_PERSOANE:]
+
+          # ——— Subiectul și previzualizarea din inbox: spun vestea ———
+          if noi_pers:
+              # pe persoane: „login → Integrare” pentru un fork, „login (4)” pentru mai multe
+              bucati = [f'{x["login"]} → {x["forkuri"][0]["integrare"]}' if len(x["forkuri"]) == 1
+                        else f'{x["login"]} ({len(x["forkuri"])})' for x in noi_pers[:2]]
+              if noi == 1:
+                  subiect = "Fork nou: " + bucati[0]
+              elif len(noi_pers) == 1:
+                  subiect = numar(noi, "fork nou", "fork-uri noi") + " de la " + noi_pers[0]["login"]
+              else:
+                  subiect = numar(noi, "fork nou", "fork-uri noi") + ": " + ", ".join(bucati)
+                  if len(noi_pers) > 2:
+                      subiect += " și încă " + numar(len(noi_pers) - 2, "persoană", "persoane")
+              subiect += f" · {total} în total"
+              x0 = noi_pers[0]
+              f0, n0 = x0["forkuri"][0], len(x0["forkuri"])
+              la_ce = f0["integrare"] if n0 == 1 else numar(n0, "integrare", "integrări")
+              preheader = f'{x0["login"]} a făcut fork la {la_ce} {zi(f0["local"])}, la {f0["local"]:%H:%M}'
+              preheader += (", și încă " + numar(noi - n0, "fork", "fork-uri") + " de la alții.") if noi > n0 else "."
+          else:
+              subiect = "Fork-uri GitHub · nimic nou" + ("" if erori else f" · {total} în total")
+              preheader = ("Ultimul fork a apărut " + ultimul_text + ".") if toate else "Niciun fork până acum."
+          if erori:
+              subiect += " · " + numar(erori, "integrare necitită", "integrări necitite")
+              preheader = (f'{erori_lista[0]["nume"]} nu a putut fi citită ({erori_lista[0]["eroare"]}).' if erori == 1
+                           else numar(erori, "integrare", "integrări") + " nu au putut fi citite.") + " " + preheader
+          titlu = (numar(noi, "fork nou", "fork-uri noi") if noi else "Niciun fork nou") + " în ultimele 24 de ore"
+          rulare = ""
+          if os.getenv("GITHUB_RUN_ID"):
+              rulare = (os.getenv("GITHUB_SERVER_URL", "https://github.com") + "/" + os.getenv("GITHUB_REPOSITORY", "")
+                        + "/actions/runs/" + os.getenv("GITHUB_RUN_ID"))
+          ordine = sorted(raport, key=lambda r: (-len(r["forkuri"]), r["nume"]))
+
+          # ——— Textul simplu ———
+          linii = ["hubinteligent · Fork-uri GitHub", "Raport zilnic · " + moment, "", titlu]
+          for f in noi_lista:
+              linii.append(f'  {f["login"]} a făcut fork la {f["integrare"]} · {cand(f["local"])} · {context(f)}'
+                           + (f' · redenumit {f["redenumit"]}' if f["redenumit"] else "") + f' · {f["url"]}')
+          for r in erori_lista:
+              linii.append(f'  {r["nume"]} nu a putut fi citită ({r["eroare"]}); cifrele nu includ fork-urile ei.')
+          linii += ["", f"În total: {total}" + (f" (+{noi})" if noi else "") + f" · Persoane: {len(lista_pers)}"
+                    + (f" (+{pers_noi})" if pers_noi else "") + f" · Ultimul fork: {ultimul_text}", "",
+                    "FORK-URI MAI VECHI" if noi else "CINE A FĂCUT FORK"]
+          for pers in vechi_pers:
+              fl = pers["forkuri"]
+              linii.append(f'{pers["login"]} · {numar(len(fl), "fork", "fork-uri")} · {zi(fl[0]["local"])} · {pers["profil"]}')
+              for f in fl:
+                  linii.append(f'  {f["integrare"]}' + (f' · redenumit {f["redenumit"]}' if f["redenumit"] else "")
+                               + (f' · push după fork: {f["push"].astimezone(tz):%d.%m.%Y}' if f["push"] else "")
+                               + f' · {cand(f["local"])} · {f["url"]}')
+          if not vechi_pers:
+              linii.append("Niciun fork mai vechi de 24 de ore." if noi else "Niciun fork până acum.")
+          linii += ["", "PE INTEGRĂRI"]
+          for r in ordine:
+              linii.append(f'  {r["nume"]}: ' + (f'nu s-a putut citi ({r["eroare"]})' if r["eroare"] else str(len(r["forkuri"]))))
+          linii += ["", "—", "Trimis automat de GitHub Actions" + (": " + rulare if rulare else "")]
+          with open("forkuri.txt", "w", encoding="utf-8") as fis:
+              fis.write("\n".join(linii) + "\n")
+
+          # ——— HTML: tiparele și tokenii emailurilor hubinteligent (core/contrib_mail.py) ———
+          # Un registru de contoare: cifra zilei în Plex Mono (albastră doar când e ceva nou), calendarul ultimelor
+          # săptămâni lângă ea, oamenii cu poza lor de pe GitHub. Tabele cu stiluri inline; dark mode și telefon prin clase.
+          SANS = "'IBM Plex Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif"
+          MONO = "'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace"
+          FONTS_URL = ("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500"
+                       "&family=IBM+Plex+Sans:wght@400;500;600&display=swap")
+          CANVAS, SURFACE, SURFACE_UP = "#fafafa", "#ffffff", "#f7f7f8"
+          LINE = "#dfdfe2"
+          INK, INK_SOFT, INK_MUTED, INK_FAINT = "#17171c", "#3e3e46", "#67676f", "#909098"
+          SIGNAL, EROARE, ATENTIE, MONOGRAMA = "#0e65f1", "#c42b1c", "#b25e09", "#f0f0f2"
+          SPALAT, SPALAT_LINIE = "#f2f7ff", "#cfe0fc"   # fundalul și conturul veștii
+          CALD = ("#ececef", "#b7d0fb", "#6a9ff6", "#0e65f1")  # calendarul: 0, 1, 2, 3+ fork-uri pe zi
+          BARA, PISTA = "#c4c4cb", "#f0f0f2"
+          CLASA = {INK: "c-ink", INK_SOFT: "c-soft", INK_MUTED: "c-muted", INK_FAINT: "c-faint",
+                   SIGNAL: "c-sig", EROARE: "c-err", ATENTIE: "c-warn-t"}
+          INALTIME = {10: 14, 11: 16, 12: 18, 13: 20, 14: 22, 15: 22, 18: 26}
+          TABEL = 'role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"'
+          TABEL_MIC = 'role="presentation" cellpadding="0" cellspacing="0" border="0"'
+          LOGO_URL = "https://hubinteligent.org/brand/hubinteligent-logo-128.png"
+          CSS = (
+              ":root{color-scheme:light dark;supported-color-schemes:light dark;}"
+              "body{margin:0;padding:0;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;}"
+              "a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;}"
+              ".hc{border-radius:3px;font-size:0;line-height:0;}"
+              "@media only screen and (max-width:600px){.wrap{padding:12px!important;}.px{padding:20px 16px!important;}"
+              ".pxh{padding:14px 16px!important;}.st{display:block!important;width:100%!important;}"
+              ".hm{padding:18px 0 0!important;text-align:left!important;}.cal{float:none!important;margin:0!important;}"
+              ".lk{text-align:left!important;padding:0!important;}"
+              ".bt{padding:8px 0 0!important;text-align:left!important;}"
+              ".nm{width:42%!important;}.cif{font-size:40px!important;line-height:42px!important;}}"
+              "@media (prefers-color-scheme:dark){"
+              ".c-canvas{background:#111113!important;}"
+              ".c-surface{background:#1a1a1c!important;border-color:#28282a!important;}"
+              ".c-up{background:#202022!important;}.c-line{border-color:#28282a!important;}"
+              ".c-ink{color:#f4f4f5!important;}.c-soft{color:#cfcfd3!important;}"
+              ".c-muted{color:#a0a0a7!important;}.c-faint{color:#71717a!important;}"
+              ".c-sig{color:#488af4!important;}.c-err{color:#f47067!important;}.c-warn-t{color:#e0a458!important;}"
+              ".c-warn{border-color:#28282a!important;border-left-color:#f47067!important;}"
+              ".c-wash{background:#162238!important;border-color:#27406e!important;}.c-washl{border-color:#27406e!important;}"
+              ".c-btn{background:#1a1a1c!important;border-color:#3a3a3f!important;color:#f4f4f5!important;}"
+              ".c-mg{background:#26262a!important;}.c-mg img,.c-mg span{color:#cfcfd3!important;}"
+              ".h0{background:#28282c!important;}.h1{background:#1d3d75!important;}.h2{background:#2f63c2!important;}"
+              ".h3{background:#5b9bf8!important;}.c-bar{background:#55555d!important;}.c-barn{background:#488af4!important;}"
+              ".c-track{background:#242427!important;}"
+              "}"
+          )
+          MSO = ("<!--[if mso]><style>body,table,td,p,a,span,h1,h2{font-family:'Segoe UI',Arial,sans-serif!important;}"
+                 ".m{font-family:Consolas,'Courier New',monospace!important;}</style><![endif]-->")
+
+          def esc(v):
+              return html.escape(str(v), quote=True)
+
+          def nb(v):
+              """Nume compuse care nu se rup pe două rânduri („Nova Power & Gas”, „HTTP 403”)."""
+              return esc(v).replace(" ", "&nbsp;")
+
+          def txt(size, color, weight=400, extra="", mono=False, cls=""):
+              c = " ".join(x for x in (CLASA.get(color, ""), "m" if mono else "", cls) if x)
+              font = f"font-family:{MONO};font-variant-numeric:tabular-nums;" if mono else f"font-family:{SANS};"
+              return (f'class="{c}" style="margin:0;{font}font-size:{size}px;line-height:{INALTIME[size]}px;'
+                      f'color:{color};font-weight:{weight};{extra}"')
+
+          def p(continut, size, color, weight=400, extra="", mono=False, cls="", tag="p"):
+              return f"<{tag} {txt(size, color, weight, extra, mono, cls)}>{continut}</{tag}>"
+
+          def link(url, eticheta, color, weight=500, extra=""):
+              return (f'<a href="{esc(url)}" class="{CLASA.get(color, "")}" translate="no" '
+                      f'style="color:{color};text-decoration:none;font-weight:{weight};{extra}">{eticheta}</a>')
+
+          def mono(v, extra=""):
+              return f'<span class="m" style="font-family:{MONO};font-variant-numeric:tabular-nums;{extra}">{v}</span>'
+
+          def poza(cine, marime):
+              """Poza contului de pe GitHub. Celula are fundal, iar imaginea are inițiala ca text alternativ:
+              dacă pozele sunt blocate, rămâne o monogramă."""
+              raza, litera = marime // 2, esc((cine["login"][:1] or "?").upper())
+              stil = f"width:{marime}px;height:{marime}px;border-radius:{raza}px;"
+              interior = (f'<img src="{esc(cine["poza"])}" width="{marime}" height="{marime}" alt="{litera}" style="display:block;{stil}'
+                          f'border:0;font-family:{SANS};font-size:{13 if marime < 40 else 15}px;line-height:{marime}px;font-weight:600;'
+                          f'color:{INK_SOFT};text-align:center;">') if cine["poza"] else (
+                          f'<span style="font-family:{SANS};font-size:13px;line-height:{marime}px;font-weight:600;color:{INK_SOFT};">'
+                          f'{litera}</span>')
+              return (f'<table {TABEL_MIC}><tr><td class="c-mg" width="{marime}" height="{marime}" align="center" valign="middle" '
+                      f'bgcolor="{MONOGRAMA}" style="{stil}background:{MONOGRAMA};">{interior}</td></tr></table>')
+
+          SEP = f'<span class="c-faint" style="color:{INK_FAINT};">&nbsp;&nbsp;·&nbsp;&nbsp;</span>'
+          SEP_LISTA = f'<span class="c-faint" style="color:{INK_FAINT};">&nbsp;&nbsp;·&nbsp;</span> '
+
+          def redenumit(f):
+              if not f["redenumit"]:
+                  return ""
+              return (f' <span class="c-muted m" translate="no" style="font-family:{MONO};font-size:11px;color:{INK_MUTED};'
+                      f'word-break:break-word;overflow-wrap:anywhere;">({esc(f["redenumit"])})</span>')
+
+          # Antetul, ca în emailurile site-ului: marca și numele în stânga, eticheta emailului în dreapta
+          antet = (f'<tr><td class="pxh c-line" style="padding:16px 24px;border-bottom:1px solid {LINE};">'
+                   f'<table {TABEL}><tr><td valign="middle" style="width:24px;">'
+                   f'<img src="{LOGO_URL}" width="24" height="24" alt="" style="display:block;width:24px;height:24px;border:0;'
+                   f'border-radius:7px;"></td>'
+                   f'<td valign="middle" style="padding-left:10px;"><span class="c-ink" translate="no" style="font-family:{SANS};'
+                   f'font-size:14px;line-height:20px;font-weight:600;color:{INK};letter-spacing:-0.01em;">hubinteligent</span></td>'
+                   f'<td align="right" valign="middle">{p("Fork-uri GitHub", 12, INK_MUTED, 500, tag="span")}</td>'
+                   f'</tr></table></td></tr>')
+
+          # ——— 1. Contorul zilei și calendarul ———
+          def calendar():
+              """Ultimele săptămâni, ca graficul de contribuții de pe GitHub: o coloană pe săptămână, de luni până duminică."""
+              mic = f"font-family:{SANS};font-size:10px;line-height:12px;color:{INK_FAINT};"
+              pe_zi = {}
+              for f in toate:
+                  pe_zi[f["local"].date()] = pe_zi.get(f["local"].date(), 0) + 1
+              start = azi - timedelta(days=azi.weekday() + 7 * (SAPTAMANI - 1))
+              # rândul cu lunile: eticheta stă pe prima săptămână a lunii și se întinde peste săptămânile ei
+              grupuri = []
+              for s in range(SAPTAMANI):
+                  luna = (start + timedelta(days=7 * s + 6)).month
+                  if grupuri and grupuri[-1][0] == luna:
+                      grupuri[-1][1] += 1
+                  else:
+                      grupuri.append([luna, 1])
+              luni = "<td></td>" + "".join(
+                  f'<td class="c-faint" colspan="{n}" align="left" style="{mic}padding-bottom:1px;">'
+                  f'{LUNI_SCURT[luna - 1] if n > 1 else "&nbsp;"}</td>' for luna, n in grupuri)
+              randuri = ""
+              for z in range(7):
+                  celule = (f'<td class="c-faint" align="left" valign="middle" style="{mic}padding-right:3px;">'
+                            f'{ {0: "L", 2: "Mi", 4: "V"}.get(z, "&nbsp;") }</td>')
+                  for s in range(SAPTAMANI):
+                      d = start + timedelta(days=7 * s + z)
+                      if d > azi:
+                          celule += '<td width="12" height="12"></td>'
+                          continue
+                      nivel = min(pe_zi.get(d, 0), 3)
+                      celule += f'<td class="hc h{nivel}" width="12" height="12" bgcolor="{CALD[nivel]}"></td>'
+                  randuri += f"<tr>{celule}</tr>"
+              scara = "".join(f'<td class="hc h{k}" width="10" height="10" bgcolor="{c}"></td>' for k, c in enumerate(CALD))
+              legenda = (f'<table role="presentation" cellpadding="0" cellspacing="3" border="0" align="right"><tr>'
+                         f'<td class="c-faint m" style="{mic}font-family:{MONO};padding-right:1px;">0</td>{scara}'
+                         f'<td class="c-faint" style="{mic}padding-left:1px;white-space:nowrap;">3+ pe zi</td></tr></table>')
+              return (f'<table {TABEL_MIC} class="cal" align="right" style="margin:0 0 0 auto;"><tr><td>'
+                      f'<table role="presentation" cellpadding="0" cellspacing="3" border="0">'
+                      f'<tr>{luni}</tr>{randuri}</table></td></tr><tr><td style="padding-top:2px;">'
+                      f'<table {TABEL}><tr><td class="c-faint" valign="middle" style="{mic}padding-left:20px;white-space:nowrap;">'
+                      f'{SAPTAMANI} săptămâni</td><td valign="middle" align="right">{legenda}</td></tr></table></td></tr></table>')
+
+          culoare_cifra = SIGNAL if noi else INK_FAINT
+          eticheta_cifra = numar(noi, "fork nou", "fork-uri noi").split(" ", 1)[1] if noi else "fork-uri noi"
+          cifra = (f'<h1 style="margin:0;font-weight:400;">'
+                   f'<span class="{CLASA[culoare_cifra]} m cif" style="display:block;font-family:{MONO};font-variant-numeric:tabular-nums;'
+                   f'font-size:48px;line-height:50px;font-weight:500;color:{culoare_cifra};letter-spacing:-0.04em;">{noi}</span>'
+                   f'<span class="c-ink" style="display:block;padding-top:6px;font-family:{SANS};font-size:15px;line-height:22px;'
+                   f'font-weight:600;color:{INK};letter-spacing:-0.01em;">{esc(eticheta_cifra)}</span></h1>'
+                   + p("în ultimele 24 de ore", 13, INK_MUTED))
+          s1 = p(esc(moment_lung) + SEP + mono(f"{acum_local:%H:%M}"), 12, INK_MUTED)
+          s1 += (f'<table {TABEL} style="margin-top:8px;"><tr>'
+                 f'<td class="st" valign="bottom">{cifra}</td>'
+                 f'<td class="st hm" valign="bottom" align="right" style="padding-left:16px;">{calendar()}</td></tr></table>')
+
+          # Vestea: un rând pe persoană, cu poza, ce a luat și dacă mai are fork-uri
+          if noi_pers:
+              randuri = ""
+              for k, pers in enumerate(noi_pers[:MAX_NOI]):
+                  fl = pers["forkuri"]
+                  bord = f"border-top:1px solid {SPALAT_LINIE};" if k else ""
+                  cine = (link(pers["profil"], esc(pers["login"]), INK, 600, "word-break:break-word;overflow-wrap:anywhere;")
+                          + f' <span class="c-faint" style="color:{INK_FAINT};">→</span> '
+                          + ", ".join(link(f["url"], nb(f["integrare"]), INK, 600) + redenumit(f) for f in fl))
+                  primul, ultimul_f = fl[-1]["local"], fl[0]["local"]
+                  if len(fl) > 1 and primul.date() == ultimul_f.date() and f"{primul:%H:%M}" != f"{ultimul_f:%H:%M}":
+                      ora = f"{zi(primul)}, {primul:%H:%M}–{ultimul_f:%H:%M}"
+                  else:
+                      ora = cand(ultimul_f)
+                  if pers["vechi"]:
+                      ctx = "are și " + numar(pers["vechi"], "fork mai vechi", "fork-uri mai vechi")
+                  else:
+                      ctx = "primul fork de la acest cont" if len(fl) == 1 else "primele fork-uri de la acest cont"
+                  sub = mono(esc(ora)) + SEP + esc(ctx)
+                  if any(f["push"] for f in fl):
+                      sub += SEP + f'<span class="c-warn-t" style="color:{ATENTIE};">push după fork</span>'
+                  tinta, text_buton = (fl[0]["url"], "Vezi fork-ul") if len(fl) == 1 else (pers["profil"], "Vezi profilul")
+                  buton = (f'<a href="{esc(tinta)}" class="c-btn" style="display:inline-block;padding:5px 11px;border:1px solid {LINE};'
+                           f'border-radius:8px;background:{SURFACE};font-family:{SANS};font-size:12px;line-height:18px;font-weight:500;'
+                           f'color:{INK};text-decoration:none;white-space:nowrap;">{text_buton}</a>')
+                  randuri += (f'<tr><td class="c-washl" style="padding:14px 16px;{bord}"><table {TABEL}><tr>'
+                              f'<td width="40" valign="top" style="width:40px;">{poza(pers, 40)}</td>'
+                              f'<td valign="top" style="padding-left:12px;"><table {TABEL}><tr>'
+                              f'<td class="st" valign="middle">{p(cine, 14, INK_SOFT)}{p(sub, 12, INK_MUTED, extra="padding-top:1px;")}</td>'
+                              f'<td class="st bt" valign="middle" align="right" style="padding-left:12px;">{buton}</td>'
+                              f'</tr></table></td></tr></table></td></tr>')
+              if len(noi_pers) > MAX_NOI:
+                  rest = noi_pers[MAX_NOI:]
+                  cate = sum(len(x["forkuri"]) for x in rest)
+                  randuri += (f'<tr><td class="c-washl" style="padding:12px 16px;border-top:1px solid {SPALAT_LINIE};">'
+                              + p("Și încă " + mono(len(rest)) + " " + esc(numar(len(rest), "persoană", "persoane").split(" ", 1)[1])
+                                  + ", cu " + mono(cate) + " " + esc(numar(cate, "fork nou", "fork-uri noi").split(" ", 1)[1])
+                                  + ". Le găsești în integrările de mai jos.", 13, INK_SOFT) + '</td></tr>')
+              s1 += (f'<table {TABEL} class="c-wash" bgcolor="{SPALAT}" style="margin-top:20px;background:{SPALAT};'
+                     f'border:1px solid {SPALAT_LINIE};border-radius:12px;border-collapse:separate;">{randuri}</table>')
+          if erori_lista:
+              if erori == 1:
+                  r = erori_lista[0]
+                  mesaj = (f'<b class="c-ink" style="color:{INK};font-weight:600;" translate="no">{nb(r["nume"])}</b> '
+                           f'nu a putut fi citită ({mono(nb(r["eroare"]))}), așa că cifrele de mai jos nu includ fork&#8209;urile ei.')
+              else:
+                  mesaj = ("Nu au putut fi citite: " + ", ".join(
+                      f'<b class="c-ink" style="color:{INK};font-weight:600;" translate="no">{nb(r["nume"])}</b> '
+                      f'({mono(nb(r["eroare"]))})' for r in erori_lista) + ". Cifrele de mai jos nu includ fork&#8209;urile lor.")
+              s1 += (f'<table {TABEL} class="c-warn" style="margin-top:12px;border:1px solid {LINE};border-left:3px solid {EROARE};'
+                     f'border-radius:10px;border-collapse:separate;"><tr><td style="padding:10px 14px;">'
+                     f'{p(mesaj, 13, INK_SOFT)}</td></tr></table>')
+
+          # Citirile: fără casete, pe un rând, sub o linie
+          def citire(eticheta, valoare, delta=0, cuvant=False):
+              v = (f'<span class="c-ink" style="font-family:{SANS};font-size:15px;font-weight:500;color:{INK};">{esc(valoare)}</span>'
+                   if cuvant else
+                   f'<span class="c-ink m" style="font-family:{MONO};font-variant-numeric:tabular-nums;font-size:18px;font-weight:500;'
+                   f'color:{INK};letter-spacing:-0.02em;">{esc(valoare)}</span>')
+              if delta:
+                  v += (f'<span class="c-sig m" style="font-family:{MONO};font-size:12px;font-weight:500;color:{SIGNAL};">'
+                        f'&nbsp;+{delta}</span>')
+              return (f'<td width="33%" valign="top">{p(esc(eticheta), 12, INK_MUTED)}'
+                      f'<p style="margin:0;padding-top:1px;line-height:26px;white-space:nowrap;">{v}</p></td>')
+
+          s1 += (f'<table {TABEL} class="c-line" style="margin-top:20px;border-top:1px solid {LINE};"><tr><td style="padding-top:14px;">'
+                 f'<table {TABEL}><tr>' + citire("În total", total, noi) + citire("Persoane", len(lista_pers), pers_noi)
+                 + citire("Ultimul fork", ultimul_text, cuvant=True) + '</tr></table></td></tr></table>')
+
+          # ——— 2. Fork-urile mai vechi: un rând pe persoană ———
+          s2 = p("Fork-uri mai vechi" if noi else "Cine a făcut fork", 14, INK, 600, tag="h2")
+          if afisate:
+              s2 += p("Numele deschide profilul, integrarea deschide fork-ul.", 13, INK_MUTED, extra="padding-top:2px;")
+          blocuri = ""
+          for k, pers in enumerate(afisate):
+              fl = pers["forkuri"]
+              nume = link(pers["profil"], esc(pers["login"]), INK, 600, "word-break:break-word;overflow-wrap:anywhere;")
+              if len(fl) > 1:
+                  nume += (f'<span class="c-muted" style="font-size:12px;font-weight:400;color:{INK_MUTED};">&nbsp;&nbsp;'
+                           + mono(len(fl)) + " " + esc(numar(len(fl), "fork", "fork-uri").split(" ", 1)[1]) + "</span>")
+              integrari = SEP_LISTA.join(link(f["url"], nb(f["integrare"]), INK_SOFT, 500) + redenumit(f) for f in fl)
+              extra = ""
+              cu_push = [f for f in fl if f["push"]]
+              if cu_push:
+                  ultim = max(f["push"] for f in cu_push).astimezone(tz)
+                  unde = ", ".join(nb(f["integrare"]) for f in cu_push)
+                  extra = p(f'<span class="c-warn-t" style="color:{ATENTIE};">●</span>&nbsp; Push după fork: {unde}'
+                            + SEP + "ultimul " + mono(esc(zi(ultim))), 12, INK_SOFT, extra="padding-top:4px;")
+              bord = f"border-top:1px solid {LINE};" if k else ""
+              blocuri += (f'<tr><td class="c-line" style="padding:12px 0;{bord}"><table {TABEL}><tr>'
+                          f'<td width="32" valign="top" style="width:32px;padding-top:2px;">{poza(pers, 32)}</td>'
+                          f'<td valign="top" style="padding-left:12px;"><table {TABEL}><tr>'
+                          f'<td class="st" valign="middle">{p(nume, 14, INK)}</td>'
+                          f'<td class="st lk" valign="middle" align="right" style="padding-left:12px;white-space:nowrap;">'
+                          f'{p(esc(zi(fl[0]["local"])), 12, INK_MUTED, mono=True)}</td></tr></table>'
+                          f'{p(integrari, 13, INK_SOFT, extra="padding-top:2px;")}{extra}</td></tr></table></td></tr>')
+          if restul:
+              cati = sum(len(x["forkuri"]) for x in restul)
+              inainte = afisate[-1]["forkuri"][0]["local"].strftime("%d.%m.%Y")
+              blocuri += (f'<tr><td class="c-line" style="padding:12px 0 0;border-top:1px solid {LINE};">'
+                          + p("Și încă " + mono(len(restul)) + " " + esc(numar(len(restul), "persoană", "persoane").split(" ", 1)[1])
+                              + ", cu " + mono(cati) + " " + esc(numar(cati, "fork", "fork-uri").split(" ", 1)[1])
+                              + " dinainte de " + mono(inainte) + ". Lista completă se deschide din integrările de mai jos.",
+                              13, INK_MUTED) + '</td></tr>')
+          if blocuri:
+              s2 += f'<table {TABEL} style="margin-top:6px;">{blocuri}</table>'
+          else:
+              s2 += p("Niciun fork mai vechi de 24 de ore." if noi else "Niciun fork până acum.", 14, INK_MUTED, extra="padding-top:6px;")
+
+          # ——— 3. Pe integrări: bara arată cât din total, capătul albastru ce e nou ———
+          s3 = p("Pe integrări", 14, INK, 600, tag="h2")
+          maxim = max([len(r["forkuri"]) for r in citite] + [1])
+          randuri = ""
+          for k, r in enumerate(ordine):
+              bord = f"border-top:1px solid {LINE};" if k else ""
+              nume = (f'<td class="c-line nm" width="36%" valign="middle" style="padding:9px 0;{bord}">'
+                      f'{p(link(r["url"] + "/forks", nb(r["nume"]), INK_SOFT, 500), 14, INK_SOFT)}</td>')
+              if r["eroare"]:
+                  randuri += (f'<tr>{nume}<td class="c-line" colspan="2" valign="middle" align="right" style="padding:9px 0 9px 12px;{bord}">'
+                              f'{p("nu s-a putut citi" + SEP + mono(nb(r["eroare"])), 12, EROARE)}</td></tr>')
+                  continue
+              n = len(r["forkuri"])
+              plus = sum(f["nou"] for f in r["forkuri"])
+              vechi_w, nou_w = round(100 * (n - plus) / maxim), round(100 * plus / maxim)
+              segmente = ""
+              if vechi_w:
+                  segmente += f'<td class="hc c-bar" width="{vechi_w}%" height="6" bgcolor="{BARA}" style="height:6px;"></td>'
+              if nou_w:
+                  segmente += f'<td class="hc c-barn" width="{nou_w}%" height="6" bgcolor="{SIGNAL}" style="height:6px;"></td>'
+              if vechi_w + nou_w < 100:
+                  segmente += '<td height="6" style="height:6px;font-size:0;line-height:0;"></td>'
+              bara = (f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="hc c-track" '
+                      f'bgcolor="{PISTA}" style="background:{PISTA};border-radius:3px;"><tr>{segmente}</tr></table>')
+              semn = (f'<span class="c-sig" style="font-size:12px;color:{SIGNAL};">+{plus}</span>&nbsp;&nbsp;' if plus else "")
+              randuri += (f'<tr>{nume}<td class="c-line" valign="middle" style="padding:9px 0 9px 12px;{bord}">{bara}</td>'
+                          f'<td class="c-line" width="56" valign="middle" align="right" style="width:56px;padding:9px 0 9px 8px;{bord}'
+                          f'white-space:nowrap;">{p(semn + str(n), 13, INK if n else INK_FAINT, 500, mono=True)}</td></tr>')
+          s3 += f'<table {TABEL} style="margin-top:6px;">{randuri}</table>'
+
+          corp = antet + "".join(
+              f'<tr><td class="px c-line" style="padding:24px;{"border-top:1px solid " + LINE + ";" if k else ""}">{s}</td></tr>'
+              for k, s in enumerate([s1, s2, s3]))
+          subsol = "Trimis automat de GitHub&nbsp;Actions" + (SEP + link(rulare, "Vezi rularea", INK_SOFT, 500) if rulare else "")
+          corp += (f'<tr><td class="px c-up c-line" align="center" bgcolor="{SURFACE_UP}" style="padding:14px 24px;'
+                   f'background:{SURFACE_UP};border-top:1px solid {LINE};border-radius:0 0 13px 13px;">'
+                   f'{p(subsol, 12, INK_MUTED)}</td></tr>')
+          pagina = (
+              '<!DOCTYPE html><html lang="ro"><head><meta charset="utf-8">'
+              '<meta name="viewport" content="width=device-width,initial-scale=1">'
+              '<meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark">'
+              '<meta name="format-detection" content="telephone=no,date=no,address=no,email=no">'
+              f'<title>{esc(subiect)}</title><link rel="stylesheet" href="{FONTS_URL}"><style>{CSS}</style>{MSO}</head>'
+              f'<body class="c-canvas" style="margin:0;padding:0;background:{CANVAS};">'
+              '<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:transparent;">'
+              + esc(preheader) + "&#847;&zwnj;&nbsp;" * 60 + '</div>'
+              f'<table {TABEL} class="c-canvas" bgcolor="{CANVAS}" style="background:{CANVAS};">'
+              '<tr><td align="center" class="wrap" style="padding:32px 16px;">'
+              f'<table {TABEL} class="c-surface" bgcolor="{SURFACE}" style="max-width:560px;background:{SURFACE};'
+              f'border:1px solid {LINE};border-radius:14px;border-collapse:separate;">' + corp + '</table>'
+              '</td></tr></table></body></html>'
+          )
+          with open("forkuri.html", "w", encoding="utf-8") as fis:
+              fis.write(pagina)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fis:
+              fis.write("subject=" + subiect + "\n")
+
+          # ——— Rezumatul rulării din GitHub Actions ———
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as fis:
+              fis.write(f"### {subiect}\n\n{moment}\n\n| Integrare | Fork-uri | Noi (24h) |\n|---|---:|---:|\n")
+              for r in ordine:
+                  if r["eroare"]:
+                      fis.write(f'| [{r["nume"]}]({r["url"]}/forks) | eroare: {r["eroare"]} | |\n')
+                  else:
+                      fis.write(f'| [{r["nume"]}]({r["url"]}/forks) | {len(r["forkuri"])} | '
+                                f'{sum(f["nou"] for f in r["forkuri"]) or ""} |\n')
+              fis.write("\n#### Cine a făcut fork\n\n")
+              for pers in lista_pers:
+                  fis.write(f'- **[{pers["login"]}]({pers["profil"]})** · {numar(len(pers["forkuri"]), "fork", "fork-uri")}\n')
+                  for f in pers["forkuri"]:
+                      fis.write(f'  - [{f["integrare"]}]({f["url"]}) · {cand(f["local"])}'
+                                + (f' · redenumit `{f["redenumit"]}`' if f["redenumit"] else "")
+                                + (f' · push după fork {f["push"].astimezone(tz):%d.%m.%Y}' if f["push"] else "")
+                                + (" · **nou**" if f["nou"] else "") + "\n")
+              if not lista_pers:
+                  fis.write("Niciun fork până acum.\n")
+          print(subiect)
+          PYTHONEOF
+
+      - name: Trimite email folosind configurarea existentă
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          DKIM_KEY: ${{ secrets.DKIM_GITHUB_KEY }}
+          SUBIECT: ${{ steps.raport.outputs.subject }}
+        run: |
+          if [ -n "$DKIM_KEY" ]; then
+            { sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends python3-dkim; } >/dev/null \
+              || echo "::warning::Nu am putut instala python3-dkim"
+          fi
+          /usr/bin/python3 << 'PYTHONEOF'
+          import os
+          import smtplib
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+          from email.utils import formatdate, getaddresses, make_msgid
+
+          DOMENIU = "hubinteligent.org"
+          SELECTOR = "github2026"
+          EXPEDITOR = "github@" + DOMENIU
+          ANTETE = [b"from", b"to", b"subject", b"date", b"message-id", b"mime-version", b"content-type"]
+          destinatari = [adresa for _, adresa in getaddresses([os.environ["EMAIL_TO"]]) if adresa]
+          mesaj = MIMEMultipart("alternative")
+          mesaj["From"] = "GitHub Workflows <" + EXPEDITOR + ">"
+          mesaj["To"] = ", ".join(destinatari)
+          mesaj["Subject"] = os.environ["SUBIECT"]
+          mesaj["Date"] = formatdate(localtime=True)
+          mesaj["Message-ID"] = make_msgid(domain=DOMENIU)
+          mesaj.attach(MIMEText(open("forkuri.txt", encoding="utf-8").read(), "plain", "utf-8"))
+          mesaj.attach(MIMEText(open("forkuri.html", encoding="utf-8").read(), "html", "utf-8"))
+          raw = mesaj.as_bytes(policy=mesaj.policy.clone(linesep="\r\n"))
+          cheie = os.environ.get("DKIM_KEY", "").replace("\r\n", "\n").strip().encode()
+          if cheie:
+              try:
+                  import dkim
+                  semnatura = dkim.sign(raw, SELECTOR.encode(), DOMENIU.encode(), cheie + b"\n",
+                                        canonicalize=(b"relaxed", b"relaxed"), include_headers=ANTETE)
+                  data = semnatura + raw
+              except Exception as e:
+                  print("::warning::Semnarea DKIM a eșuat: " + type(e).__name__)
+                  data = raw
+          else:
+              print("::warning::Lipsește secretul DKIM_GITHUB_KEY; emailul va fi nesemnat.")
+              data = raw
+          with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=60) as smtp:
+              smtp.login(os.environ["EMAIL_USER"], os.environ["EMAIL_PASS"])
+              smtp.sendmail(EXPEDITOR, destinatari, data)
+          print("Email trimis către destinatarii configurați în EMAIL_TO.")
+          PYTHONEOF
