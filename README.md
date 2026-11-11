@@ -41,12 +41,26 @@ Sunt **Ciprian Nicolae**, lucrez în securitate cibernetică și sunt pasionat d
 
 ---
 
-## Contact și suport
+## Licență
 
-📫 Pentru idei, întrebări sau colaborări: [Discuții pe GitHub](https://github.com/cnecrea/cnecrea/discussions)
+Curs BNR și SMS.to sunt gratuite. Celelalte integrări pot fi testate gratuit 30 de zile, iar apoi licența se obține printr-o contribuție, pe pagina [Obține licența](https://hubinteligent.org/donate). 
+## Contact
 
-Dacă folosești integrările mele și îți sunt utile, ia în considerare susținerea proiectului. Dezvoltarea lor consumă timp, resurse și multe ore de muncă, iar orice contribuție mă ajută să le mențin actuale și să adaug lucruri noi.
+Pentru întrebări sau colaborări, scrie-mi prin [formularul de contact](https://hubinteligent.org/contact). Este singurul canal de contact direct. Pentru situațiile de mai jos există o cale mai rapidă:
 
-☕ [Buy Me a Coffee](https://www.buymeacoffee.com/cnecrea) 
+- **Eroare într-o integrare:** deschide un issue în repository-ul ei, fără date personale.
+- **Probleme cu licența:** folosește pagina [Probleme licență](https://hubinteligent.org/probleme-licenta).
+- **Integrare nouă:** propune-o sau votează pe pagina [Cereri](https://hubinteligent.org/cereri).
 
-Dacă vrei să ajuți direct, poți contribui prin testare beta, raportarea problemelor sau share temporar și anonim la conturi/servicii — mă ajută enorm să testez în condiții reale.
+## Contributori
+
+Prin [portalul contributorilor](https://hubinteligent.org/contribuie) îmi poți oferi temporar accesul la contul tău de la furnizor, ca să pot analiza situații care apar doar la anumite conturi, de exemplu cu prosumator sau cu mai multe locuri de consum.
+
+- **Condiție:** doar utilizatorii care au achiziționat o licență validă pot deveni contributori. Perioada de test gratuită nu oferă acces la portal.
+- Tu oferi doar accesul la cont. Analiza, testarea și dezvoltarea le fac eu.
+- Datele de conectare se criptează în browserul tău, iar contul îl poți retrage oricând.
+- Un cont oferit nu garantează că o problemă va fi rezolvată sau că o integrare va fi realizată.
+
+## Susține proiectul
+
+Dacă integrările îți sunt utile, le poți susține pe ☕ [Buy Me a Coffee](https://www.buymeacoffee.com/cnecrea).
