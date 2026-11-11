@@ -1,4 +1,3 @@
-![Logo](https://github.com/cnecrea/cnecrea/blob/main/brand/banner_v2.svg)
 
 ## Salut! 👋
 
