@@ -54,11 +54,13 @@ Pentru întrebări sau colaborări, scrie-mi prin [formularul de contact](https:
 ## Contributori
 
 Prin [portalul contributorilor](https://hubinteligent.org/contribuie) îmi poți oferi temporar accesul la contul tău de la furnizor, ca să pot analiza situații care apar doar la anumite conturi, de exemplu cu prosumator sau cu mai multe locuri de consum.
+> Condiție: doar utilizatorii care au achiziționat o licență validă pot deveni contributori. Perioada de test gratuită nu oferă acces la portal.
+> 
 
-- **Condiție:** doar utilizatorii care au achiziționat o licență validă pot deveni contributori. Perioada de test gratuită nu oferă acces la portal.
 - Tu oferi doar accesul la cont. Analiza, testarea și dezvoltarea le fac eu.
 - Datele de conectare se criptează în browserul tău, iar contul îl poți retrage oricând.
 - Un cont oferit nu garantează că o problemă va fi rezolvată sau că o integrare va fi realizată.
+
 
 ## Susține proiectul
 
